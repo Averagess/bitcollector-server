@@ -1,0 +1,46 @@
+POST http://localhost:3000
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "XD"
+}
+
+###
+POST http://localhost:3000/initPlayer
+Content-Type: application/json
+
+{
+  "discordId": "2234356",
+  "discordDisplayName": "Average (fake)"
+}
+###
+POST http://localhost:3000/checkBalance
+Content-Type: application/json
+
+{
+  "discordId": "12e3456"
+}
+###
+POST http://localhost:3000/buyItem
+Content-Type: application/json
+
+{
+  "discordId": "123456",
+  "itemName": "TRS-80 Model 1"
+}
+###
+POST http://localhost:3000/updatePlayer
+Content-Type: application/json
+
+{
+  "discordId": "123456"
+}
+###
+
+POST http://localhost:3000/getShopForPlayer
+Content-Type: application/json
+
+{
+  "discordId": "123456"
+}
