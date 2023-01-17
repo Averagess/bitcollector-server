@@ -39,6 +39,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["morgan", "npm:1.10.0"],\
             ["pg", "virtual:0b9667a669201a5b88c039cbc6654eca44bfa5ab33e8562b81023f17f6ebf92e72bdfd6f95e573b6a25d5380453b69804b2f3d15cabaa546e3cac98128e3f9b2#npm:8.8.0"],\
             ["prettier", "npm:2.8.2"],\
+            ["rotating-file-stream", "npm:3.0.4"],\
             ["ts-node", "virtual:0b9667a669201a5b88c039cbc6654eca44bfa5ab33e8562b81023f17f6ebf92e72bdfd6f95e573b6a25d5380453b69804b2f3d15cabaa546e3cac98128e3f9b2#npm:10.9.1"],\
             ["ts-node-dev", "virtual:0b9667a669201a5b88c039cbc6654eca44bfa5ab33e8562b81023f17f6ebf92e72bdfd6f95e573b6a25d5380453b69804b2f3d15cabaa546e3cac98128e3f9b2#npm:2.0.0"],\
             ["typescript", "patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=ad5954"]\
@@ -1573,6 +1574,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["morgan", "npm:1.10.0"],\
             ["pg", "virtual:0b9667a669201a5b88c039cbc6654eca44bfa5ab33e8562b81023f17f6ebf92e72bdfd6f95e573b6a25d5380453b69804b2f3d15cabaa546e3cac98128e3f9b2#npm:8.8.0"],\
             ["prettier", "npm:2.8.2"],\
+            ["rotating-file-stream", "npm:3.0.4"],\
             ["ts-node", "virtual:0b9667a669201a5b88c039cbc6654eca44bfa5ab33e8562b81023f17f6ebf92e72bdfd6f95e573b6a25d5380453b69804b2f3d15cabaa546e3cac98128e3f9b2#npm:10.9.1"],\
             ["ts-node-dev", "virtual:0b9667a669201a5b88c039cbc6654eca44bfa5ab33e8562b81023f17f6ebf92e72bdfd6f95e573b6a25d5380453b69804b2f3d15cabaa546e3cac98128e3f9b2#npm:2.0.0"],\
             ["typescript", "patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=ad5954"]\
@@ -3845,6 +3847,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["rimraf", "npm:3.0.2"],\
             ["glob", "npm:7.2.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["rotating-file-stream", [\
+        ["npm:3.0.4", {\
+          "packageLocation": "./.yarn/cache/rotating-file-stream-npm-3.0.4-f0688b1058-2f2cd4ec78.zip/node_modules/rotating-file-stream/",\
+          "packageDependencies": [\
+            ["rotating-file-stream", "npm:3.0.4"]\
           ],\
           "linkType": "HARD"\
         }]\
