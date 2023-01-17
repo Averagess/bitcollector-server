@@ -1,7 +1,7 @@
 import express from "express";
 
 import { consoleLogger, fileLogger } from "./utils/logger";
-import { connectToDatabase } from "./utils/db";
+import { connectToDatabase, disconnectFromDatabase } from "./utils/db";
 import config from "./utils/config";
 import getRouter from "./routes/getters";
 import postRouter from "./routes/posters";
@@ -24,3 +24,9 @@ app.use("/", postRouter)
 app.listen(PORT, () => {
   console.log("Server listening on http://localhost:3000");
 });
+
+process.on("SIGINT", async () => {
+  console.log("SIGINT signal received. Shutting down gracefully");
+  await disconnectFromDatabase();
+  process.exit(0);
+})
