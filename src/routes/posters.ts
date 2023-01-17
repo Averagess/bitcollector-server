@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import items from "../items";
-import Player from "../models/player";
+import Player, { Item } from "../models/player";
 
 const router = Router();
 
@@ -59,9 +59,19 @@ router.post("/buyItem", async (req, res) => {
   const player = await Player.findOne({ discordId });
   if (!player) return res.status(404).send("Player not found");
 
-  const item = items.find(
-    (item) => item.name.toLowerCase() === itemName.toLowerCase()
-  );
+  // if the item name is a number, it means the user wants to buy the item at that index + 1
+  let item: Item | undefined;
+
+  if(itemName.length <= 2 && Number(itemName)) {
+    const index = Math.floor(Number(itemName)) - 1;
+    item = items[index];
+  } 
+  else {
+    item = items.find(
+      (item) => item.name.toLowerCase() === itemName.toLowerCase()
+    );
+  }
+
 
   if (!item) return res.status(404).send("No such item in the shop");
 
@@ -84,7 +94,7 @@ router.post("/buyItem", async (req, res) => {
 
   const amountToBuy = Number(amount) || 1;
 
-  const itemInInventory = player.inventory.find((i) => i.name === item.name);
+  const itemInInventory = player.inventory.find((i) => i.name === item?.name);
 
   const itemPriceBig = itemInInventory
     ? BigInt(item.price.toString()) *
@@ -119,7 +129,9 @@ router.post("/buyItem", async (req, res) => {
 
     const updatedPlayer = await player.save();
 
-    res.send(updatedPlayer);
+    const purchasedItem = itemInInventory ? itemInInventory : { ...item, amount: amountToBuy }
+
+    res.send({ player: updatedPlayer, purchasedItem });
   } else {
     const error = {
       error: "not enough money",
