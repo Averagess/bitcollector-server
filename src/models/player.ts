@@ -16,7 +16,7 @@ interface InventoryItem extends Item {
 const Long = mongoose.Schema.Types.Long
 
 
-interface Player {
+export interface PlayerInterface {
   discordDisplayName: string
   discordId: string
   balance: typeof Long | string
@@ -26,7 +26,7 @@ interface Player {
   updatedAt: Date
 }
 
-const PlayerSchema = new mongoose.Schema<Player>({
+const PlayerSchema = new mongoose.Schema<PlayerInterface>({
   discordDisplayName: {
     type: String,
     required: true,
@@ -66,4 +66,4 @@ PlayerSchema.set("toJSON", {
 });
 
 
-export default mongoose.model<Player>('Player', PlayerSchema)
+export default mongoose.model<PlayerInterface>('Player', PlayerSchema)
