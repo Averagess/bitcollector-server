@@ -31,12 +31,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express", "npm:4.17.15"],\
             ["@types/morgan", "npm:1.9.4"],\
             ["@types/node", "npm:18.11.18"],\
+            ["@types/node-cron", "npm:3.0.7"],\
             ["dotenv", "npm:16.0.3"],\
             ["eslint", "npm:8.31.0"],\
             ["express", "npm:4.18.2"],\
             ["mongoose", "npm:6.8.3"],\
             ["mongoose-long", "virtual:0b9667a669201a5b88c039cbc6654eca44bfa5ab33e8562b81023f17f6ebf92e72bdfd6f95e573b6a25d5380453b69804b2f3d15cabaa546e3cac98128e3f9b2#npm:0.6.0"],\
             ["morgan", "npm:1.10.0"],\
+            ["node-cron", "npm:3.0.2"],\
             ["pg", "virtual:0b9667a669201a5b88c039cbc6654eca44bfa5ab33e8562b81023f17f6ebf92e72bdfd6f95e573b6a25d5380453b69804b2f3d15cabaa546e3cac98128e3f9b2#npm:8.8.0"],\
             ["prettier", "npm:2.8.2"],\
             ["rotating-file-stream", "npm:3.0.4"],\
@@ -1271,6 +1273,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/node-cron", [\
+        ["npm:3.0.7", {\
+          "packageLocation": "./.yarn/cache/@types-node-cron-npm-3.0.7-a36026eb40-1a37bd32ef.zip/node_modules/@types/node-cron/",\
+          "packageDependencies": [\
+            ["@types/node-cron", "npm:3.0.7"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/qs", [\
         ["npm:6.9.7", {\
           "packageLocation": "./.yarn/cache/@types-qs-npm-6.9.7-4a3e6ca0d0-7fd6f9c250.zip/node_modules/@types/qs/",\
@@ -1566,12 +1577,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express", "npm:4.17.15"],\
             ["@types/morgan", "npm:1.9.4"],\
             ["@types/node", "npm:18.11.18"],\
+            ["@types/node-cron", "npm:3.0.7"],\
             ["dotenv", "npm:16.0.3"],\
             ["eslint", "npm:8.31.0"],\
             ["express", "npm:4.18.2"],\
             ["mongoose", "npm:6.8.3"],\
             ["mongoose-long", "virtual:0b9667a669201a5b88c039cbc6654eca44bfa5ab33e8562b81023f17f6ebf92e72bdfd6f95e573b6a25d5380453b69804b2f3d15cabaa546e3cac98128e3f9b2#npm:0.6.0"],\
             ["morgan", "npm:1.10.0"],\
+            ["node-cron", "npm:3.0.2"],\
             ["pg", "virtual:0b9667a669201a5b88c039cbc6654eca44bfa5ab33e8562b81023f17f6ebf92e72bdfd6f95e573b6a25d5380453b69804b2f3d15cabaa546e3cac98128e3f9b2#npm:8.8.0"],\
             ["prettier", "npm:2.8.2"],\
             ["rotating-file-stream", "npm:3.0.4"],\
@@ -3284,6 +3297,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/negotiator-npm-0.6.3-9d50e36171-b8ffeb1e26.zip/node_modules/negotiator/",\
           "packageDependencies": [\
             ["negotiator", "npm:0.6.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["node-cron", [\
+        ["npm:3.0.2", {\
+          "packageLocation": "./.yarn/cache/node-cron-npm-3.0.2-5ee1c1c226-dd21585c0d.zip/node_modules/node-cron/",\
+          "packageDependencies": [\
+            ["node-cron", "npm:3.0.2"],\
+            ["uuid", "npm:8.3.2"]\
           ],\
           "linkType": "HARD"\
         }]\
