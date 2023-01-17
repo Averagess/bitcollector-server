@@ -309,11 +309,8 @@ app.post("/addBitToPlayer", async (req, res) => {
   const { discordId } = req.body;
   if (!discordId) return res.status(400).send("discordId is required");
 
-  const player = await Player.findOne({ discordId });
+  const player = await Player.findOneAndUpdate({ discordId }, { $inc: { balance: 1}}, {timestamps: false});
   if (!player) return res.status(404).end();
-  const newBalance = (BigInt(player.balance as string) + BigInt(1)).toString();
-  player.balance = newBalance;
-  await player.save();
   res.status(200).end();
 });
 
