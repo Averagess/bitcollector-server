@@ -18,4 +18,17 @@ const connectToDatabase = async () => {
   return null;
 }
 
-export { connectToDatabase }
+const disconnectFromDatabase = async () => {
+  try {
+    console.log("Attemting to disconnect from database")
+    await mongoose.disconnect()
+    console.log("disconnected from database");
+    return null
+  } catch (error) {
+    console.log("disconnecting from database failed.");
+    console.log(error)
+    return process.exit(1);
+  }
+}
+
+export { connectToDatabase, disconnectFromDatabase }
