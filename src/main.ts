@@ -120,7 +120,10 @@ app.post("/buyItem", async (req, res) => {
   const player = await Player.findOne({ discordId });
   if (!player) return res.status(404).send("Player not found");
 
-  const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
+  const item = items.find(
+    (item) => item.name.toLowerCase() === itemName.toLowerCase()
+  );
+
   if (!item) return res.status(404).send("No such item in the shop");
 
   const secondsSinceLastUpdate = Math.floor(
