@@ -45,17 +45,17 @@ const PlayerSchema = new mongoose.Schema<Player>({
     default: 0,
   },
   inventory: [{ name: String, price: Number, cps: Number, amount: Number }],
-  createdAt: {
-    type: Date,
-    required: true,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    required: true,
-    default: Date.now,
-  },
-})
+  // createdAt: {
+  //   type: Date,
+  //   required: true,
+  //   default: Date.now,
+  // },
+  // updatedAt: {
+  //   type: Date,
+  //   required: true,
+  //   default: Date.now,
+  // },
+}, { timestamps: true })
 
 PlayerSchema.set("toJSON", {
   transform: (document: any, returnedObject: any) => {
