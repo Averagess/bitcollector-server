@@ -161,12 +161,11 @@ app.post("/buyItem", async (req, res) => {
 
     let inventory = player.inventory;
 
-    const itemInInventory = inventory.find((item) => item.name === itemName);
-
     if (itemInInventory) {
       itemInInventory.amount = itemInInventory.amount + amountToBuy;
       inventory = inventory.map((item) => {
-        if (item.name === itemName) {
+        if (item.name === itemInInventory.name) {
+          console.log(item);
           return itemInInventory;
         }
         return item;
@@ -175,12 +174,11 @@ app.post("/buyItem", async (req, res) => {
       inventory.push({ ...item, amount: amountToBuy });
     }
 
-    const updatedPlayer = await Player.findOneAndUpdate(
-      { discordId },
-      { balance: newBalance, cps: newCps, inventory, updatedAt: Date.now() },
-      { new: true }
-    );
-    if (!updatedPlayer) return res.status(500).send("Something went wrong");
+    player.balance = newBalance.toString();
+    player.cps = newCps;
+    player.inventory = inventory;
+
+    const updatedPlayer = await player.save();
 
     res.send(updatedPlayer);
   } else {
@@ -208,24 +206,22 @@ app.post("/updatePlayer", async (req, res) => {
 
   if (!secondsSinceLastUpdate) return res.send(player);
 
-  console.log(
-    `player.balance: ${player.balance}`,
-    "secondsSinceLastUpdate: ",
-    secondsSinceLastUpdate,
-    "player.cps: ",
-    player.cps
-  );
   const newBalance = (
     BigInt(player.balance as string) +
     BigInt(player.cps) * BigInt(secondsSinceLastUpdate)
   ).toString();
 
-  const updatedPlayer = await Player.findOneAndUpdate(
-    { discordId: player.discordId },
-    { balance: newBalance, updatedAt: Date.now() },
-    { new: true }
+  console.log(
+    `player.balance: ${player.balance}`,
+    `new balance: ${newBalance}`,
+    `diff balance: ${BigInt(newBalance) - BigInt(player.balance as string)}`,
+    `secondsSinceLastUpdate: ${secondsSinceLastUpdate}`,
+    `player.cps: ${player.cps}`
   );
-  if (!updatedPlayer) return res.status(500).send("Something went wrong");
+
+  player.balance = newBalance;
+
+  const updatedPlayer = await player.save();
 
   res.send(updatedPlayer);
 });
@@ -242,23 +238,29 @@ app.get("/updateAllPlayers", async (req, res) => {
 
       if (!secondsSinceLastUpdate) return player;
 
-      console.log(
-        `player.balance: ${player.balance}`,
-        "secondsSinceLastUpdate: ",
-        secondsSinceLastUpdate,
-        "player.cps: ",
-        player.cps
-      );
-
       const newBalance = (
         BigInt(player.balance as string) +
         BigInt(player.cps) * BigInt(secondsSinceLastUpdate)
       ).toString();
 
-      const updatedPlayer = await Player.findOneAndUpdate(
-        { discordId: player.discordId },
-        { balance: newBalance, updatedAt: Date.now() },
-        { new: true }
+      console.log(
+        `player.balance: ${player.balance}`,
+        `new balance: ${newBalance}`,
+        `diff balance: ${
+          BigInt(newBalance) - BigInt(player.balance as string)
+        }`,
+        `secondsSinceLastUpdate: ${secondsSinceLastUpdate}`,
+        `player.cps: ${player.cps}`
+      );
+
+      player.balance = newBalance;
+
+      console.log(
+        `Updating player: ${player.discordId} | ${player.discordDisplayName} with new balance: ${newBalance}`
+      );
+      const updatedPlayer = await player.save();
+      console.log(
+        `Updated player: ${updatedPlayer.discordId} | ${updatedPlayer.discordDisplayName} successfully`
       );
       if (!updatedPlayer) return res.status(500).send("Something went wrong");
 
