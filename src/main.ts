@@ -1,11 +1,13 @@
 import express from "express";
-import logger from "./utils/logger";
+import { consoleLogger, fileLogger } from "./utils/logger";
 
 import Player from "./models/player";
 
 const app = express();
+
 app.use(express.json());
-app.use(logger);
+app.use(consoleLogger);
+app.use(fileLogger);
 
 import config from "./utils/config";
 import { connectToDatabase } from "./utils/db";
