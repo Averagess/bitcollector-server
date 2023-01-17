@@ -1,7 +1,9 @@
 import express from "express";
-import { consoleLogger, fileLogger } from "./utils/logger";
+import cron from "node-cron";
 
 import Player from "./models/player";
+import { PlayerInterface } from "./models/player";
+import { consoleLogger, fileLogger } from "./utils/logger";
 
 const app = express();
 
@@ -12,6 +14,7 @@ app.use(fileLogger);
 import config from "./utils/config";
 import { connectToDatabase } from "./utils/db";
 import items from "./items";
+import nodeTest from "node:test";
 const PORT = config.PORT;
 
 connectToDatabase();
@@ -33,8 +36,27 @@ app.get("/allItems", (_req, res) => {
   res.send(items);
 });
 
-// OPTIMIZATION: Setup an cron job to run every x hours that updates the leaderboard.
-app.get("/leaderboard", async (_req, res) => {
+interface PlayerInLeaderboard {
+  discordDisplayName: string;
+  discordId: string;
+  cps: number;
+  balance: string;
+}
+
+interface leaderboard {
+  players: PlayerInLeaderboard[] | null;
+  createdAt: Date | null;
+  nextUpdate: Date | null;
+}
+
+const leaderBoard: leaderboard = {
+  players: null,
+  createdAt: null,
+  nextUpdate: null,
+};
+
+const updateLeaderboard = async () => {
+  console.log("Updating leaderboard");
   const players = await Player.find({});
   const playersWithUpdatedBalance = players.map((player) => {
     const secondsSinceLastUpdate = Math.floor(
@@ -44,7 +66,9 @@ app.get("/leaderboard", async (_req, res) => {
       BigInt(player.balance as string) +
       BigInt(player.cps) * BigInt(secondsSinceLastUpdate);
     return {
-      ...player.toObject(),
+      discordDisplayName: player.discordDisplayName,
+      discordId: player.discordId,
+      cps: player.cps,
       balance: newBalance.toString(),
     };
   });
@@ -53,7 +77,18 @@ app.get("/leaderboard", async (_req, res) => {
     (a, b) => Number(b.balance) - Number(a.balance)
   );
 
-  return res.send(sortedPlayers);
+  leaderBoard.players = sortedPlayers.splice(0, 10);
+  leaderBoard.createdAt = new Date();
+  leaderBoard.nextUpdate = new Date(Date.now() + 1000 * 60 * 30);
+  console.log("Leaderboard updated");
+};
+
+updateLeaderboard();
+cron.schedule("*/30 * * * *", updateLeaderboard)
+
+
+app.get("/leaderboard", async (_req, res) => {
+  return res.send(leaderBoard);
 });
 
 app.post("/getShopForPlayer", async (req, res) => {
