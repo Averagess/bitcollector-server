@@ -1,7 +1,8 @@
-import morgan from "morgan";
+const morgan = require("morgan");
 import { createStream } from "rotating-file-stream";
 
-morgan.token("date", () => `[${new Date().toLocaleString()}]`);
+morgan.token("timestamp", () => `[${new Date().toLocaleString()}]`);
+
 morgan.token("body", (req: any) => {
   if (req.method === "GET") return "";
   else return JSON.stringify(req.body);
@@ -14,7 +15,7 @@ const accessLogStream = createStream("access.log", {
 });
 
 const fileLogger = morgan(
-  ":date :remote-addr :method :url :status :res[content-length] - :response-time ms :body",
+  ":timestamp :remote-addr :method :url :status :res[content-length] - :response-time ms :body",
   { stream: accessLogStream }
 );
 
