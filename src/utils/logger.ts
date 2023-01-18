@@ -9,7 +9,7 @@ morgan.token("body", (req: any) => {
 });
 
 const accessLogStream = createStream("access.log", {
-  interval: "1d",
+  interval: "3d",
   path: "logs",
   compress: "gzip",
 });
