@@ -3,6 +3,7 @@ import config from "./config"
 
 const { MONGODB_URI, ENVIRONMENT, MONGODB_TEST_URI } = config
 
+mongoose.set("strictQuery", false)
 
 const connectToDatabase = async () => {
   try {
