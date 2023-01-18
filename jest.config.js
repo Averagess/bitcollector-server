@@ -1,7 +1,9 @@
 module.exports = {
   verbose: true,
-  testURL: 'http://localhost',
   testEnvironment: "node",
+  testEnvironmentOptions: {
+    "url" : 'http://localhost'
+  },
   roots: [
     "<rootDir>"
   ],
