@@ -1,24 +1,10 @@
-import express from "express";
-
-import { consoleLogger, fileLogger } from "./utils/logger";
 import { connectToDatabase, disconnectFromDatabase } from "./utils/db";
 import config from "./utils/config";
-import getRouter from "./routes/getters";
-import postRouter from "./routes/posters";
+
+import app from "./app";
 
 const PORT = config.PORT;
-const app = express();
 connectToDatabase();
-
-app.use(express.json());
-app.use(consoleLogger);
-app.use(fileLogger);
-
-
-
-app.use("/", getRouter);
-app.use("/", postRouter)
-
 
 
 app.listen(PORT, () => {
