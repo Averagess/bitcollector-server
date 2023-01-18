@@ -1,5 +1,5 @@
 import { Router } from "express";
-import cron from "node-cron";
+const cron = require("node-cron")
 
 import items from "../items";
 import Player from "../models/player";
@@ -64,10 +64,14 @@ router.get("/allItems", (_req, res) => {
 });
 
 router.get("/leaderboard", async (_req, res) => {
-  return res.send(leaderBoard);
+  if (!leaderBoard.players) {
+    await updateLeaderboard();
+    return res.send(leaderBoard);
+  }
+  res.send(leaderBoard);
 });
 
-updateLeaderboard();
+
 cron.schedule("*/30 * * * *", updateLeaderboard)
 
 export default router;
