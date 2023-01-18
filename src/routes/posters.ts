@@ -59,9 +59,9 @@ router.post("/buyItem", async (req, res) => {
   const player = await Player.findOne({ discordId });
   if (!player) return res.status(404).send("Player not found");
 
-  // if the item name is a number, it means the user wants to buy the item at that index + 1
   let item: Item | undefined;
-
+  
+  // if the item name is a number, it means the user wants to buy the item at that index + 1
   if(itemName.length <= 2 && Number(itemName)) {
     const index = Math.floor(Number(itemName)) - 1;
     item = items[index];
@@ -177,6 +177,15 @@ router.post("/updatePlayer", async (req, res) => {
   res.send(updatedPlayer);
 });
 
+router.post("/addBitToPlayer", async (req, res) => {
+  const { discordId } = req.body;
+  if (!discordId) return res.status(400).send("discordId is required");
+  
+  const player = await Player.findOneAndUpdate({ discordId }, { $inc: { balance: 1}}, {timestamps: false});
+  if (!player) return res.status(404).end();
+  res.status(200).end();
+});
+
 router.get("/updateAllPlayers", async (_req, res) => {
   const players = await Player.find();
   if (!players) return res.status(404).send("No players found");
@@ -219,16 +228,6 @@ router.get("/updateAllPlayers", async (_req, res) => {
     })
   );
   res.send(updatedPlayers);
-});
-
-
-router.post("/addBitToPlayer", async (req, res) => {
-  const { discordId } = req.body;
-  if (!discordId) return res.status(400).send("discordId is required");
-
-  const player = await Player.findOneAndUpdate({ discordId }, { $inc: { balance: 1}}, {timestamps: false});
-  if (!player) return res.status(404).end();
-  res.status(200).end();
 });
 
 export default router;
