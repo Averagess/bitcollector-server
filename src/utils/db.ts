@@ -8,7 +8,7 @@ const connectToDatabase = async () => {
   try {
     console.log("Attemting to connect to database")
     if (ENVIRONMENT === "test" || ENVIRONMENT === "development") {
-      console.log("connecting to dev database")
+      console.log("connecting to dev database because env was set to " + ENVIRONMENT)
       if(!MONGODB_TEST_URI) throw new Error("MONGODB_TEST_URI is not defined in .env file, and ENVIRONMENT was set to " + ENVIRONMENT)
       await mongoose.connect(MONGODB_TEST_URI)
 
