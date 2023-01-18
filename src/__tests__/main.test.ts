@@ -35,7 +35,6 @@ describe("Test GET Methods", () => {
   it("Get /leaderboard responds 200 and has atleast 1 player, first player is test player", async () => {
     const res = await api.get("/leaderboard");
     const body = res.body.players;
-    console.log(body);
     expect(res.status).toBe(200);
     expect(body.length).toBeGreaterThan(0);
     expect(body[0].discordId).toBe("123");
@@ -59,7 +58,6 @@ describe("Test POST Methods with correct arguments", () => {
     const res = await api.post("/updatePlayer").send({
       discordId: "123",
     });
-    console.log(res.body);
     expect(res.status).toBe(200);
     const secondsSinceLastUpdate = Math.floor(
       (new Date(res.body.updatedAt).getTime() -
@@ -175,7 +173,6 @@ describe("Test buying an item with insufficient balance", () => {
       itemName: "5",
       amount: "100000000000"
     });
-    console.log(res)
     expect(res.status).toBe(400);
     expect(res.body.error).toBe("not enough money")
   });
