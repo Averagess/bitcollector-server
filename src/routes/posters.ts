@@ -102,8 +102,6 @@ router.post("/buyItem", async (req, res) => {
       BigInt(amountToBuy)
     : BigInt(item.price.toString()) * BigInt(amountToBuy);
 
-  console.log("itemPriceBig: ", itemPriceBig);
-
   if (newBalance >= itemPriceBig) {
     newBalance = newBalance - itemPriceBig;
     const newCps = player.cps + item.cps * amountToBuy;
@@ -114,7 +112,6 @@ router.post("/buyItem", async (req, res) => {
       itemInInventory.amount = itemInInventory.amount + amountToBuy;
       inventory = inventory.map((item) => {
         if (item.name === itemInInventory.name) {
-          console.log(item);
           return itemInInventory;
         }
         return item;
@@ -157,20 +154,22 @@ router.post("/updatePlayer", async (req, res) => {
 
   if (!secondsSinceLastUpdate) return res.send(player);
 
-  const newBalance = (
-    BigInt(player.balance as string) +
-    BigInt(player.cps) * BigInt(secondsSinceLastUpdate)
-  ).toString();
+  const oldBalance = BigInt(player.balance as string)
+  const cps = BigInt(player.cps);
+  const updatedAt = player.updatedAt
 
-  console.log(
-    `player.balance: ${player.balance}`,
-    `new balance: ${newBalance}`,
-    `diff balance: ${BigInt(newBalance) - BigInt(player.balance as string)}`,
-    `secondsSinceLastUpdate: ${secondsSinceLastUpdate}`,
-    `player.cps: ${player.cps}`
+  const newBalance = balanceUpdater({ oldBalance, cps, updatedAt })
+
+  logger.info(
+    `Updating player ${player.discordId}
+    player.balance (old): ${player.balance}
+    player.balance (new): ${newBalance}
+    balance diff: ${BigInt(newBalance) - BigInt(player.balance as string)}
+    secondsSinceLastUpdate: ${secondsSinceLastUpdate}
+    player.cps:${player.cps}`
   );
 
-  player.balance = newBalance;
+  player.balance = newBalance.toString();
 
   const updatedPlayer = await player.save();
 
