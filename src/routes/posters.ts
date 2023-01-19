@@ -62,18 +62,16 @@ router.post("/buyItem", async (req, res) => {
   if (!player) return res.status(404).send("Player not found");
 
   let item: Item | undefined;
-  
-  // if the item name is a number, it means the user wants to buy the item at that index + 1
-  if(itemName.length <= 2 && Number(itemName)) {
+
+  // if the item name is a number, it means the user wants to buy the item at that index - 1
+  if (itemName.length <= 2 && Number(itemName)) {
     const index = Math.floor(Number(itemName)) - 1;
     item = items[index];
-  } 
-  else {
+  } else {
     item = items.find(
       (item) => item.name.toLowerCase() === itemName.toLowerCase()
     );
   }
-
 
   if (!item) return res.status(404).send("No such item in the shop");
 
@@ -81,17 +79,21 @@ router.post("/buyItem", async (req, res) => {
     (Date.now() - new Date(player.updatedAt).getTime()) / 1000
   );
 
-  let newBalance =
-    BigInt(player.balance as string) +
-    BigInt(player.cps) * BigInt(secondsSinceLastUpdate);
 
-  console.log(
-    `player.balance (old): ${player.balance}`,
-    `player.balance (new): ${newBalance}`,
-    "secondsSinceLastUpdate: ",
-    secondsSinceLastUpdate,
-    "player.cps: ",
-    player.cps
+  const oldBalance = BigInt(player.balance as string);
+  const cps = BigInt(player.cps);
+  const updatedAt = new Date(player.updatedAt);
+
+  let newBalance = balanceUpdater({ oldBalance, cps, updatedAt })
+
+
+  logger.info(
+    `Updating player ${player.discordId}
+      player.balance (old): ${player.balance}
+      player.balance (new): ${newBalance}
+      balance diff: ${BigInt(newBalance) - BigInt(player.balance as string)}
+      secondsSinceLastUpdate: ${secondsSinceLastUpdate}
+      player.cps: ${player.cps}`
   );
 
   const amountToBuy = Number(amount) || 1;
@@ -128,7 +130,9 @@ router.post("/buyItem", async (req, res) => {
 
     const updatedPlayer = await player.save();
 
-    const purchasedItem = itemInInventory ? itemInInventory : { ...item, amount: amountToBuy }
+    const purchasedItem = itemInInventory
+      ? itemInInventory
+      : { ...item, amount: amountToBuy };
 
     res.send({ player: updatedPlayer, purchasedItem });
   } else {
@@ -181,8 +185,12 @@ router.post("/updatePlayer", async (req, res) => {
 router.post("/addBitToPlayer", async (req, res) => {
   const { discordId } = req.body;
   if (!discordId) return res.status(400).send("discordId is required");
-  
-  const player = await Player.findOneAndUpdate({ discordId }, { $inc: { balance: 1}}, {timestamps: false});
+
+  const player = await Player.findOneAndUpdate(
+    { discordId },
+    { $inc: { balance: 1 } },
+    { timestamps: false }
+  );
   if (!player) return res.status(404).end();
   res.status(200).end();
 });
@@ -193,34 +201,34 @@ router.get("/updateAllPlayers", async (_req, res) => {
 
   const updatedPlayers = await Promise.all(
     players.map(async (player) => {
+      
       const secondsSinceLastUpdate = Math.floor(
         (Date.now() - new Date(player.updatedAt).getTime()) / 1000
       );
 
       if (!secondsSinceLastUpdate) return player;
+      
+      const oldBalance = BigInt(player.balance as string)
+      const cps = BigInt(player.cps)
+      const updatedAt = player.updatedAt
 
-      const newBalance = (
-        BigInt(player.balance as string) +
-        BigInt(player.cps) * BigInt(secondsSinceLastUpdate)
-      ).toString();
+      const newBalance = balanceUpdater({ oldBalance, cps, updatedAt})
 
-      console.log(
-        `player.balance: ${player.balance}`,
-        `new balance: ${newBalance}`,
-        `diff balance: ${
-          BigInt(newBalance) - BigInt(player.balance as string)
-        }`,
-        `secondsSinceLastUpdate: ${secondsSinceLastUpdate}`,
-        `player.cps: ${player.cps}`
+      logger.info(`Updating player ${player.discordId}
+    player.balance (old): ${player.balance}
+    player.balance (new): ${newBalance}
+    balance diff: ${BigInt(newBalance) - BigInt(player.balance as string)}
+    secondsSinceLastUpdate: ${secondsSinceLastUpdate}
+    player.cps: ${player.cps}`
       );
 
-      player.balance = newBalance;
+      player.balance = newBalance.toString();
 
-      console.log(
+      logger.info(
         `Updating player: ${player.discordId} | ${player.discordDisplayName} with new balance: ${newBalance}`
       );
       const updatedPlayer = await player.save();
-      console.log(
+      logger.info(
         `Updated player: ${updatedPlayer.discordId} | ${updatedPlayer.discordDisplayName} successfully`
       );
       if (!updatedPlayer) return res.status(500).send("Something went wrong");
@@ -229,6 +237,22 @@ router.get("/updateAllPlayers", async (_req, res) => {
     })
   );
   res.send(updatedPlayers);
+});
+
+router.post("/resetPlayer", async (req, res) => {
+  const { discordId } = req.body;
+  if (!discordId)
+    return res.status(400).json({ error: "discordId is required" });
+
+  const player = await Player.findOne({ discordId });
+  if (!player) return res.status(404).json({ error: "player not found" });
+
+  player.balance = "0";
+  player.cps = 0;
+  player.inventory = [];
+
+  const updatedPlayer = await player.save();
+  return res.send(updatedPlayer);
 });
 
 export default router;
