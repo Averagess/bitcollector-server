@@ -3,12 +3,12 @@ import express from "express";
 import getRouter from "./routes/getters";
 import postRouter from "./routes/posters";
 
-import { consoleLogger, fileLogger } from "./utils/logger";
+import { httpConsoleLogger, fileLogger } from "./utils/logger";
 
 const app = express();
 
 app.use(express.json());
-app.use(consoleLogger);
+app.use(httpConsoleLogger);
 app.use(fileLogger);
 
 app.use("/", getRouter);
