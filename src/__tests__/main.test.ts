@@ -167,7 +167,7 @@ describe("Test POST Methods with an discordId that doesnt have an account", () =
 })
 
 describe("Test buying an item with insufficient balance", () => {
-  it("/buyItem with insufficient balance returns 400", async () => {
+  it("/buyItem with insufficient balance returns 400, error msg: not enough money", async () => {
     const res = await api.post("/buyItem").send({
       discordId: "456",
       itemName: "5",
@@ -177,3 +177,29 @@ describe("Test buying an item with insufficient balance", () => {
     expect(res.body.error).toBe("not enough money")
   });
 });
+
+describe("Test /resetPlayer", () => {
+  it("resetPlayer with existing account returns 200 and correct properties", async () => {
+    const res = await api.post("/resetPlayer").send({
+      discordId: "123",
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.discordId).toBe("123");
+    expect(res.body.balance).toBe("0");
+    expect(res.body.cps).toBe(0);
+    expect(res.body.inventory).toEqual([]);
+  });
+  it("resetPlayer with nonexisting account returns 404 and correct properties", async () => {
+    const res = await api.post("/resetPlayer").send({
+      discordId: "789",
+    });
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe("player not found");
+  });
+  it("resetPlayer with no discordId returns 400 and correct properties", async () => {
+    const res = await api.post("/resetPlayer").send({});
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("discordId is required");
+  }
+  )
+})
