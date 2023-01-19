@@ -4,6 +4,7 @@ const cron = require("node-cron")
 
 import items from "../items";
 import Player from "../models/player";
+import balanceUpdater from "../helpers/balanceUpdater";
 
 const router = Router();
 
@@ -27,15 +28,17 @@ const leaderBoard: leaderboard = {
 };
 
 const updateLeaderboard = async () => {
-  console.log("Updating leaderboard");
+  logger.info("Updating leaderboard");
   const players = await Player.find({});
   const playersWithUpdatedBalance = players.map((player) => {
-    const secondsSinceLastUpdate = Math.floor(
-      (Date.now() - new Date(player.updatedAt).getTime()) / 1000
-    );
-    let newBalance =
-      BigInt(player.balance as string) +
-      BigInt(player.cps) * BigInt(secondsSinceLastUpdate);
+    
+    
+    const oldBalance = BigInt(player.balance as string);
+    const cps = BigInt(player.cps);
+    const updatedAt = player.updatedAt
+    
+    const newBalance = balanceUpdater({oldBalance, cps, updatedAt})
+
     return {
       discordDisplayName: player.discordDisplayName,
       discordId: player.discordId,
