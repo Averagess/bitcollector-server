@@ -200,8 +200,9 @@ router.get("/updateAllPlayers", async (_req, res) => {
   if (!players) return res.status(404).send("No players found");
 
   const updatedPlayers = await Promise.all(
+
     players.map(async (player) => {
-      
+
       const secondsSinceLastUpdate = Math.floor(
         (Date.now() - new Date(player.updatedAt).getTime()) / 1000
       );
@@ -215,11 +216,11 @@ router.get("/updateAllPlayers", async (_req, res) => {
       const newBalance = balanceUpdater({ oldBalance, cps, updatedAt})
 
       logger.info(`Updating player ${player.discordId}
-    player.balance (old): ${player.balance}
-    player.balance (new): ${newBalance}
-    balance diff: ${BigInt(newBalance) - BigInt(player.balance as string)}
-    secondsSinceLastUpdate: ${secondsSinceLastUpdate}
-    player.cps: ${player.cps}`
+      player.balance (old): ${player.balance}
+      player.balance (new): ${newBalance}
+      balance diff: ${BigInt(newBalance) - BigInt(player.balance as string)}
+      secondsSinceLastUpdate: ${secondsSinceLastUpdate}
+      player.cps: ${player.cps}`
       );
 
       player.balance = newBalance.toString();
