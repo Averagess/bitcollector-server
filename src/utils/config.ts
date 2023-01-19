@@ -1,8 +1,9 @@
 import * as dotenv from 'dotenv';
+import { logger } from './logger';
 dotenv.config();
 
 if(!process.env.MONGODB_URI) throw new Error("MONGODB_URI is not defined in .env file");
-else if(!process.env.MONGODB_TEST_URI) console.warn("MONGODB_TEST_URI is not defined in .env file. Tests will throw an error if you try to run them.")
+else if(!process.env.MONGODB_TEST_URI) logger.warn("MONGODB_TEST_URI is not defined in .env file. Tests will throw an error if you try to run them.")
 
 const config = {
   PORT: process.env.PORT || 3000,

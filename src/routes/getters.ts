@@ -1,3 +1,4 @@
+import { logger } from "../utils/logger";
 import { Router } from "express";
 const cron = require("node-cron")
 
@@ -50,7 +51,7 @@ const updateLeaderboard = async () => {
   leaderBoard.players = sortedPlayers.splice(0, 10);
   leaderBoard.createdAt = new Date();
   leaderBoard.nextUpdate = new Date(Date.now() + 1000 * 60 * 30);
-  console.log("Leaderboard updated");
+  logger.info("Leaderboard updated successfully");
 };
 
 

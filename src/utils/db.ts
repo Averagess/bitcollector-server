@@ -3,23 +3,26 @@ import config from "./config"
 
 const { MONGODB_URI, ENVIRONMENT, MONGODB_TEST_URI } = config
 
+import { logger } from "./logger"
+
 mongoose.set("strictQuery", false)
 
 const connectToDatabase = async () => {
   try {
-    console.log("Attemting to connect to database")
+    logger.info("Attempting connecting to database")
     if (ENVIRONMENT === "test" || ENVIRONMENT === "development") {
-      console.log("connecting to dev database because env was set to " + ENVIRONMENT)
+      logger.info(`Connecting to DEV database because env was set to: ${ENVIRONMENT}`)
       if(!MONGODB_TEST_URI) throw new Error("MONGODB_TEST_URI is not defined in .env file, and ENVIRONMENT was set to " + ENVIRONMENT)
       await mongoose.connect(MONGODB_TEST_URI)
 
     } else{
-      console.log("connecting to production database")
+      logger.info(`Connecting to production database`)
       await mongoose.connect(MONGODB_URI)
+      logger.info(`Successfully connected to database`)
     }
   } catch (error) {
-    console.log("connecting to database failed.");
-    console.log(error)
+    logger.error("Connection to database failed. Error below");
+    logger.error(error)
     return process.exit(1);
   }
 
@@ -28,13 +31,13 @@ const connectToDatabase = async () => {
 
 const disconnectFromDatabase = async () => {
   try {
-    console.log("Attemting to disconnect from database")
+    logger.info("Attempting to disconnect from database")
     await mongoose.disconnect()
-    console.log("disconnected from database");
+    logger.info("Disconnected from database successfully");
     return null
   } catch (error) {
-    console.log("disconnecting from database failed.");
-    console.log(error)
+    logger.error("Disconnecting from database failed. Error below");
+    logger.error(error)
     return process.exit(1);
   }
 }
