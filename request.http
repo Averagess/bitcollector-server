@@ -44,3 +44,7 @@ Content-Type: application/json
 {
   "discordId": "123456"
 }
+
+###
+GET http://localhost:3000/allPlayers
+###
