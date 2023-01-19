@@ -2,17 +2,18 @@ import { connectToDatabase, disconnectFromDatabase } from "./utils/db";
 import config from "./utils/config";
 
 import app from "./app";
+import { logger } from "./utils/logger";
 
 const PORT = config.PORT;
 connectToDatabase();
 
 
 app.listen(PORT, () => {
-  console.log("Server listening on http://localhost:3000");
+  logger.info(`Server listening on http://localhost:${PORT}`);
 });
 
 process.on("SIGINT", async () => {
-  console.log("SIGINT signal received. Shutting down gracefully");
+  logger.info("SIGINT signal received. Shutting down gracefully");
   await disconnectFromDatabase();
   process.exit(0);
 })
