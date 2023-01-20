@@ -81,7 +81,7 @@ router.post("/buyItem", async (req, res) => {
 
 
   const oldBalance = BigInt(player.balance as string);
-  const cps = BigInt(player.cps);
+  const cps = player.cps;
   const updatedAt = new Date(player.updatedAt);
 
   let newBalance = balanceUpdater({ oldBalance, cps, updatedAt })
@@ -108,7 +108,8 @@ router.post("/buyItem", async (req, res) => {
 
   if (newBalance >= itemPriceBig) {
     newBalance = newBalance - itemPriceBig;
-    const newCps = player.cps + item.cps * amountToBuy;
+    
+    const newCps = Math.round((player.cps + item.cps * amountToBuy) * 100) / 100;
 
     let inventory = player.inventory;
 
@@ -161,7 +162,7 @@ router.post("/updatePlayer", async (req, res) => {
   if (!secondsSinceLastUpdate) return res.send(player);
 
   const oldBalance = BigInt(player.balance as string)
-  const cps = BigInt(player.cps);
+  const cps = player.cps;
   const updatedAt = player.updatedAt
 
   const newBalance = balanceUpdater({ oldBalance, cps, updatedAt })
@@ -210,7 +211,7 @@ router.get("/updateAllPlayers", async (_req, res) => {
       if (!secondsSinceLastUpdate) return player;
       
       const oldBalance = BigInt(player.balance as string)
-      const cps = BigInt(player.cps)
+      const cps = player.cps
       const updatedAt = player.updatedAt
 
       const newBalance = balanceUpdater({ oldBalance, cps, updatedAt})
