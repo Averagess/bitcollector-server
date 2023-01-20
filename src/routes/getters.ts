@@ -37,7 +37,7 @@ const updateLeaderboard = async () => {
     const cps = BigInt(player.cps);
     const updatedAt = player.updatedAt;
 
-    const newBalance = balanceUpdater({oldBalance, cps, updatedAt})
+    const newBalance = balanceUpdater({ oldBalance, cps, updatedAt });
 
     return {
       discordDisplayName: player.discordDisplayName,
