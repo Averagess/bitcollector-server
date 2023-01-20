@@ -40,7 +40,7 @@ const PlayerSchema = new mongoose.Schema<PlayerInterface>({
     required: true,
   },
   cps: {
-    type: Number,
+    type: mongoose.Schema.Types.Number,
     required: true,
     default: 0,
   },
