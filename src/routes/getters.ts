@@ -5,7 +5,7 @@ const cron = require("node-cron");
 import items from "../items";
 import Player from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
-import blacklist from "../models/blacklist";
+import player from "../models/player";
 
 const router = Router();
 
@@ -87,7 +87,9 @@ router.get("/leaderboard", async (_req, res) => {
 });
 
 router.get("/blacklist", async (_req, res) => {
-  const blacklistedPlayers = await blacklist.find({})
+  const players = await player.find()
+  
+  const blacklistedPlayers = players.filter(player => player.blacklisted)
   res.send(blacklistedPlayers)
 })
 
