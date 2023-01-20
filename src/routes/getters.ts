@@ -1,6 +1,6 @@
 import { logger } from "../utils/logger";
 import { Router } from "express";
-const cron = require("node-cron")
+const cron = require("node-cron");
 
 import items from "../items";
 import Player from "../models/player";
@@ -31,8 +31,6 @@ const updateLeaderboard = async () => {
   logger.info("Updating leaderboard");
   const players = await Player.find({});
   const playersWithUpdatedBalance = players.map((player) => {
-    
-    
     const oldBalance = BigInt(player.balance as string);
     const cps = BigInt(player.cps);
     const updatedAt = player.updatedAt;
@@ -69,7 +67,6 @@ const updateLeaderboard = async () => {
   leaderBoard.nextUpdate = nextUpdate;
   logger.info(`Leaderboard updated successfully, next update is ${nextUpdate}`);
 };
-
 
 router.get("/allPlayers", async (_req, res) => {
   const players = await Player.find({});
