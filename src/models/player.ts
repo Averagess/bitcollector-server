@@ -22,6 +22,8 @@ export interface PlayerInterface {
   balance: typeof Long | string
   cps: number
   inventory: InventoryItem[]
+  blacklisted: { reason: string, started: Date }
+  blacklistHistory?: { reason: string, started: Date, ended: Date }[]
   createdAt: Date
   updatedAt: Date
 }
@@ -45,16 +47,11 @@ const PlayerSchema = new mongoose.Schema<PlayerInterface>({
     default: 0,
   },
   inventory: [{ name: String, price: Number, cps: Number, amount: Number }],
-  // createdAt: {
-  //   type: Date,
-  //   required: true,
-  //   default: Date.now,
-  // },
-  // updatedAt: {
-  //   type: Date,
-  //   required: true,
-  //   default: Date.now,
-  // },
+  blacklisted: {
+    type: { reason: String, started: Date },
+    default: null
+  },
+  blacklistHistory: [{ reason: String, started: Date, ended: Date }]
 }, { timestamps: true })
 
 PlayerSchema.set("toJSON", {
