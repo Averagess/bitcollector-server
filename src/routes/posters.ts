@@ -49,6 +49,7 @@ router.post("/initPlayer", async (req, res) => {
     const savedPlayer = await player.save();
     res.send(savedPlayer);
   } catch (error) {
+    logger.error(error);
     res.status(500).end();
   }
 });
@@ -256,5 +257,55 @@ router.post("/resetPlayer", async (req, res) => {
   const updatedPlayer = await player.save();
   return res.send(updatedPlayer);
 });
+
+router.post("/blacklistPlayer", async (req,res) => {
+  const { discordId, reason } = req.body;
+  if (!discordId)
+    return res.status(400).json({ error: "discordId is required" });
+
+  const player = await Player.findOne({ discordId });
+  if (!player) return res.status(404).json({ error: "player not found" });
+  else if(player.blacklisted) return res.status(409).json({ error: "player already blacklisted"})
+
+
+  if(reason && (reason instanceof String || typeof reason === "string")){
+    player.blacklisted = { reason: reason.toString(), started: new Date() }
+  } else {
+    player.blacklisted = { reason: "Reason not given", started: new Date() }
+  }
+
+  try {
+    const savedPlayer = await player.save()
+    res.send(savedPlayer)
+  } catch (error) {
+    res.status(500).end()
+  }
+})
+
+router.post("/unblacklistPlayer", async (req,res) => {
+  const { discordId } = req.body;
+  if (!discordId)
+    return res.status(400).json({ error: "discordId is required" });
+
+  const player = await Player.findOne({ discordId });
+  if (!player) return res.status(404).json({ error: "player not found" });
+  else if(!player.blacklisted) return res.status(409).json({ error: "player not blacklisted"})
+
+  
+  player.blacklistHistory.push({
+    reason: player.blacklisted.reason ? player.blacklisted.reason : "No reason given",
+    started: player.blacklisted.started,
+    ended: new Date(),
+  })
+
+  player.blacklisted = null;
+
+  try {
+    const savedPlayer = await player.save()
+    res.send(savedPlayer)
+  } catch (error) {
+    res.status(500).end()
+  }
+})
 
 export default router;
