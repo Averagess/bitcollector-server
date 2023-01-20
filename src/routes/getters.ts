@@ -53,8 +53,21 @@ const updateLeaderboard = async () => {
 
   leaderBoard.players = sortedPlayers.splice(0, 10);
   leaderBoard.createdAt = new Date();
-  leaderBoard.nextUpdate = new Date(Date.now() + 1000 * 60 * 30);
-  logger.info("Leaderboard updated successfully");
+
+  const nextUpdate = new Date();
+  const currentMinutes = nextUpdate.getMinutes();
+  const next30or00minute =
+    currentMinutes + 30 >= 60 && currentMinutes !== 60
+      ? 0
+      : 30; /* Basically this is either 00 (like 1:00) OR  30 (like 1:30) depending which time we are closer to at the execution time */
+  
+  const nextHourOrCurrentHour = next30or00minute === 0 ? nextUpdate.getHours() + 1 : nextUpdate.getHours();
+  
+  nextUpdate.setHours(nextHourOrCurrentHour);
+  nextUpdate.setMinutes(next30or00minute);
+
+  leaderBoard.nextUpdate = nextUpdate;
+  logger.info(`Leaderboard updated successfully, next update is ${nextUpdate}`);
 };
 
 
