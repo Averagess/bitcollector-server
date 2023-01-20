@@ -75,8 +75,8 @@ router.get("/leaderboard", async (_req, res) => {
   res.send(leaderBoard);
 });
 
-if(process.env.NODE_ENV !== "test"){
-  cron.schedule("*/30 * * * *", updateLeaderboard)
+if (process.env.NODE_ENV !== "test") {
+  cron.schedule("*/30 * * * *", updateLeaderboard);
 }
 
 export default router;
