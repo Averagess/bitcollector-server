@@ -5,6 +5,7 @@ const cron = require("node-cron");
 import items from "../items";
 import Player from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
+import blacklist from "../models/blacklist";
 
 const router = Router();
 
@@ -32,7 +33,7 @@ const updateLeaderboard = async () => {
   const players = await Player.find({});
   const playersWithUpdatedBalance = players.map((player) => {
     const oldBalance = BigInt(player.balance as string);
-    const cps = BigInt(player.cps);
+    const cps = player.cps;
     const updatedAt = player.updatedAt;
 
     const newBalance = balanceUpdater({ oldBalance, cps, updatedAt });
@@ -84,6 +85,11 @@ router.get("/leaderboard", async (_req, res) => {
   }
   res.send(leaderBoard);
 });
+
+router.get("/blacklist", async (_req, res) => {
+  const blacklistedPlayers = await blacklist.find({})
+  res.send(blacklistedPlayers)
+})
 
 if (process.env.NODE_ENV !== "test") {
   cron.schedule("*/30 * * * *", updateLeaderboard);
