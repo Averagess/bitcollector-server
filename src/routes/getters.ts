@@ -35,8 +35,8 @@ const updateLeaderboard = async () => {
     
     const oldBalance = BigInt(player.balance as string);
     const cps = BigInt(player.cps);
-    const updatedAt = player.updatedAt
-    
+    const updatedAt = player.updatedAt;
+
     const newBalance = balanceUpdater({oldBalance, cps, updatedAt})
 
     return {
