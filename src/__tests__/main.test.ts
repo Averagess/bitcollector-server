@@ -194,12 +194,12 @@ describe("Test /resetPlayer", () => {
       discordId: "789",
     });
     expect(res.status).toBe(404);
-    expect(res.body.error).toBe("player not found");
+    expect(res.body.error).toBe("Player not found");
   });
   it("resetPlayer with no discordId returns 400 and correct properties", async () => {
     const res = await api.post("/resetPlayer").send({});
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe("discordId is required");
+    expect(res.body.error).toBe("Missing or invalid discordId");
   }
   )
 })
