@@ -4,15 +4,13 @@ import { Router } from "express";
 import items from "../items";
 import Player, { Item } from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
+import playerExtractor from "../middleware/playerExtractor";
+import { ExtendedRequest } from "../types";
 
 const router = Router();
 
-router.post("/getShopForPlayer", async (req, res) => {
-  const { discordId } = req.body;
-  if (!discordId) return res.status(400).send("discordId is required");
-
-  const player = await Player.findOne({ discordId });
-  if (!player) return res.status(404).send("Player not found");
+router.post("/getShopForPlayer", playerExtractor, async (req:ExtendedRequest, res) => {
+  const player = req.player 
   const inventory = player.inventory;
 
   const shop = items.map((item) => {
@@ -32,9 +30,9 @@ router.post("/getShopForPlayer", async (req, res) => {
 });
 
 router.post("/initPlayer", async (req, res) => {
-  if (!req.body.discordId) return res.status(400).send("discordId is required");
+  if (!req.body.discordId) return res.status(400).json({error: "discordId is required"});
   if (!req.body.discordDisplayName)
-    return res.status(400).send("discordDisplayName is required");
+    return res.status(400).json({error: "discordDisplayName is required"});
 
   const player = new Player({
     discordId: req.body.discordId,
@@ -43,7 +41,7 @@ router.post("/initPlayer", async (req, res) => {
   });
 
   const existingPlayer = await Player.findOne({ discordId: player.discordId });
-  if (existingPlayer) return res.status(409).send("Player already exists");
+  if (existingPlayer) return res.status(409).json({error: "Player already exists"});
 
   try {
     const savedPlayer = await player.save();
@@ -54,13 +52,14 @@ router.post("/initPlayer", async (req, res) => {
   }
 });
 
-router.post("/buyItem", async (req, res) => {
-  const { discordId, itemName, amount } = req.body;
-  if (!discordId || !itemName)
-    return res.status(400).send("discordId and itemName are required fields");
+router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
+  const player = req.player
+  const { itemName, amount } = req.body;
 
-  const player = await Player.findOne({ discordId });
-  if (!player) return res.status(404).send("Player not found");
+  if (!itemName)
+    return res.status(400).json({error: "itemName is an required field"});
+
+
 
   let item: Item | undefined;
 
@@ -151,12 +150,8 @@ router.post("/buyItem", async (req, res) => {
   }
 });
 
-router.post("/updatePlayer", async (req, res) => {
-  const { discordId } = req.body;
-  if (!discordId) return res.status(400).send("discordId is required");
-
-  const player = await Player.findOne({ discordId });
-  if (!player) return res.status(404).send("Player not found");
+router.post("/updatePlayer", playerExtractor,async (req: ExtendedRequest, res) => {
+  const player = req.player
 
   const secondsSinceLastUpdate = Math.floor(
     (Date.now() - new Date(player.updatedAt).getTime()) / 1000
@@ -186,7 +181,8 @@ router.post("/updatePlayer", async (req, res) => {
   res.send(updatedPlayer);
 });
 
-router.post("/addBitToPlayer", async (req, res) => {
+router.post("/addBitToPlayer",async (req, res) => {
+  
   const { discordId } = req.body;
   if (!discordId) return res.status(400).send("discordId is required");
 
@@ -244,13 +240,8 @@ router.get("/updateAllPlayers", async (_req, res) => {
   res.send(updatedPlayers);
 });
 
-router.post("/resetPlayer", async (req, res) => {
-  const { discordId } = req.body;
-  if (!discordId)
-    return res.status(400).json({ error: "discordId is required" });
-
-  const player = await Player.findOne({ discordId });
-  if (!player) return res.status(404).json({ error: "player not found" });
+router.post("/resetPlayer", playerExtractor,async (req: ExtendedRequest, res) => {
+  const player = req.player
 
   player.balance = "0";
   player.cps = 0;
@@ -260,14 +251,11 @@ router.post("/resetPlayer", async (req, res) => {
   return res.send(updatedPlayer);
 });
 
-router.post("/blacklistPlayer", async (req,res) => {
-  const { discordId, reason } = req.body;
-  if (!discordId)
-    return res.status(400).json({ error: "discordId is required" });
+router.post("/blacklistPlayer", playerExtractor,async (req: ExtendedRequest,res) => {
+  const player = req.player
+  const { reason } = req.body;
 
-  const player = await Player.findOne({ discordId });
-  if (!player) return res.status(404).json({ error: "player not found" });
-  else if(player.blacklisted) return res.status(409).json({ error: "player already blacklisted"})
+  if(player.blacklisted) return res.status(409).json({ error: "player already blacklisted"})
 
 
   if(reason && (reason instanceof String || typeof reason === "string")){
@@ -284,14 +272,9 @@ router.post("/blacklistPlayer", async (req,res) => {
   }
 })
 
-router.post("/unblacklistPlayer", async (req,res) => {
-  const { discordId } = req.body;
-  if (!discordId)
-    return res.status(400).json({ error: "discordId is required" });
-
-  const player = await Player.findOne({ discordId });
-  if (!player) return res.status(404).json({ error: "player not found" });
-  else if(!player.blacklisted) return res.status(409).json({ error: "player not blacklisted"})
+router.post("/unblacklistPlayer", playerExtractor,async (req: ExtendedRequest,res) => {
+  const player = req.player
+  if(!player.blacklisted) return res.status(409).json({ error: "player not blacklisted"})
 
   
   player.blacklistHistory.push({
@@ -310,14 +293,8 @@ router.post("/unblacklistPlayer", async (req,res) => {
   }
 })
 
-router.post("/redeemDaily", async (req,res) => {
-  const { discordId } = req.body;
-  if (!discordId)
-    return res.status(400).json({ error: "discordId is required" });
-
-  const player = await Player.findOne({ discordId });
-  if (!player) return res.status(404).json({ error: "player not found" });
-
+router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest,res) => {
+  const player = req.player
   // If this is false, its the first time the player has redeemed daily. Otherwise we create a new date object from the lastDaily property
   const hoursSinceLastRedeem = player.lastDaily ? Math.floor(Date.now() - new Date(player.lastDaily).getTime()) / 1000 / 60 / 60 : null
   
