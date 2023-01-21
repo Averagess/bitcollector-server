@@ -308,4 +308,64 @@ router.post("/unblacklistPlayer", async (req,res) => {
   }
 })
 
+router.post("/redeemDaily", async (req,res) => {
+  const { discordId } = req.body;
+  if (!discordId)
+    return res.status(400).json({ error: "discordId is required" });
+
+  const player = await Player.findOne({ discordId });
+  if (!player) return res.status(404).json({ error: "player not found" });
+
+  // If this is false, its the first time the player has redeemed daily. Otherwise we create a new date object from the lastDaily property
+  const hoursSinceLastRedeem = player.lastDaily ? Math.floor(Date.now() - new Date(player.lastDaily).getTime()) / 1000 / 60 / 60 : null
+  
+
+  const resObject = {
+    balanceReward: null,
+    itemReward: {name: null, amount: null, cps: null},
+  }
+
+  if( hoursSinceLastRedeem < 24 && hoursSinceLastRedeem !== null) return res.status(409).json({ error: "daily already redeemed", hoursSinceLastRedeem });
+  
+  else {
+    player.dailyCount = player.dailyCount + 1
+    player.lastDaily = new Date()
+
+    // default daily reward
+    resObject.balanceReward = 100
+
+    // save the new balance
+    player.balance = (BigInt(player.balance as string) + BigInt(100)).toString()
+
+    // 50 50 chance
+    const shouldGiveItem = Math.round(Math.random()) === 1
+
+    if(shouldGiveItem && player.inventory.length > 0){
+
+      // get the random item from the players inventory
+      const randomItem = player.inventory[Math.floor(Math.random() * player.inventory.length)]
+      const itemInShop = items.find(item => item.name === randomItem.name)
+
+      let randomAmount = Math.round(Math.random() * 10)
+      if(!randomAmount) randomAmount = 1;
+
+      randomItem.amount += randomAmount
+      
+      // Round the cps 2 decimals
+      randomItem.cps = Math.round(itemInShop.cps * randomItem.amount * 100) / 100
+
+      const newCps = player.inventory.reduce((acc, item) => acc + item.cps, 0)
+
+      player.cps = Math.round(newCps * 100) / 100
+
+      resObject.itemReward.name = randomItem.name
+      resObject.itemReward.amount = randomAmount
+      resObject.itemReward.cps = Math.round(itemInShop.cps * randomAmount*100) / 100
+    }
+
+    await player.save({timestamps: false})
+    res.send(resObject)
+  }
+})
+
 export default router;
