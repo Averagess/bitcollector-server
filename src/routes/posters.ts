@@ -116,6 +116,8 @@ router.post("/buyItem", async (req, res) => {
 
     if (itemInInventory) {
       itemInInventory.amount = itemInInventory.amount + amountToBuy;
+      itemInInventory.price = itemInInventory.price + item.price * amountToBuy;
+      itemInInventory.cps = (item.cps * itemInInventory.amount)
       inventory = inventory.map((item) => {
         if (item.name === itemInInventory.name) {
           return itemInInventory;
@@ -123,7 +125,7 @@ router.post("/buyItem", async (req, res) => {
         return item;
       });
     } else {
-      inventory.push({ ...item, amount: amountToBuy });
+      inventory.push({ ...item, cps: item.cps * amountToBuy, amount: amountToBuy });
     }
 
     player.balance = newBalance.toString();
