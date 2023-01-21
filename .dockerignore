@@ -1,0 +1,10 @@
+.vscode/
+logs/
+node_modules/
+.dockerignore/
+.editorconfig
+.env
+.gitignore
+jest.config.js
+README.md
+request.http
