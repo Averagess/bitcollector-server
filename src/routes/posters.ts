@@ -195,51 +195,6 @@ router.post("/addBitToPlayer",async (req, res) => {
   res.status(200).end();
 });
 
-router.get("/updateAllPlayers", async (_req, res) => {
-  const players = await Player.find();
-  if (!players) return res.status(404).send("No players found");
-
-  const updatedPlayers = await Promise.all(
-
-    players.map(async (player) => {
-
-      const secondsSinceLastUpdate = Math.floor(
-        (Date.now() - new Date(player.updatedAt).getTime()) / 1000
-      );
-
-      if (!secondsSinceLastUpdate) return player;
-      
-      const oldBalance = BigInt(player.balance as string)
-      const cps = player.cps
-      const updatedAt = player.updatedAt
-
-      const newBalance = balanceUpdater({ oldBalance, cps, updatedAt})
-
-      logger.info(`Updating player ${player.discordId}
-      player.balance (old): ${player.balance}
-      player.balance (new): ${newBalance}
-      balance diff: ${BigInt(newBalance) - BigInt(player.balance as string)}
-      secondsSinceLastUpdate: ${secondsSinceLastUpdate}
-      player.cps: ${player.cps}`
-      );
-
-      player.balance = newBalance.toString();
-
-      logger.info(
-        `Updating player: ${player.discordId} | ${player.discordDisplayName} with new balance: ${newBalance}`
-      );
-      const updatedPlayer = await player.save();
-      logger.info(
-        `Updated player: ${updatedPlayer.discordId} | ${updatedPlayer.discordDisplayName} successfully`
-      );
-      if (!updatedPlayer) return res.status(500).send("Something went wrong");
-
-      return updatedPlayer;
-    })
-  );
-  res.send(updatedPlayers);
-});
-
 router.post("/resetPlayer", playerExtractor,async (req: ExtendedRequest, res) => {
   const player = req.player
 
