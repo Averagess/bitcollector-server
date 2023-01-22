@@ -1,4 +1,5 @@
 import express, { NextFunction, Response, Request } from "express";
+import authenticator from "./middleware/authenticator";
 
 import getRouter from "./routes/getters";
 import postRouter from "./routes/posters";
@@ -19,6 +20,7 @@ const app = express();
 app.use(express.json());
 app.use(httpConsoleLogger);
 app.use(fileLogger);
+app.use(authenticator)
 
 // app.use(blockOutsideConnections);
 
