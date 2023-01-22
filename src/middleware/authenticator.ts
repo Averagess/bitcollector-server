@@ -6,17 +6,17 @@ const authenticator = (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
-    return res.status(401).json({ error: "Missing authorization header" });
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   const [type, key] = authorization.split(" ");
 
   if (type !== "Bearer") {
-    return res.status(401).json({ error: "Invalid authorization type" }); 
+    return res.status(401).json({ error: "Unauthorized" }); 
   }
 
   if (!keys.includes(key)) {
-    return res.status(401).json({ error: "Invalid authorization key" });
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   next();
