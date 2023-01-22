@@ -4,6 +4,12 @@ import winston, { transports, format } from "winston";
 import "winston-daily-rotate-file";
 
 morgan.token("timestamp", () => `[${new Date().toLocaleString()}]`);
+morgan.token("authKey", (req: any) => {
+  if (req.headers.authorization) {
+    const [type, key] = req.headers.authorization.split(" ");
+    return `[${type}, ${key}]`;
+  } else return "[no key]";
+})
 
 morgan.token("body", (req: any) => {
   if (req.method === "GET") return "";
@@ -17,11 +23,11 @@ const accessLogStream = createStream("access.log", {
 });
 
 const fileLogger = morgan(
-  ":timestamp :remote-addr :method :url :status :res[content-length] - :response-time ms :body",
+  ":timestamp :remote-addr :authKey :method :url :status :res[content-length] - :response-time ms :body",
   { stream: accessLogStream }
 );
 
-const httpConsoleLogger = morgan(":timestamp :remote-addr :method :url :status :res[content-length] - :response-time ms :body")
+const httpConsoleLogger = morgan(":timestamp :remote-addr :authKey :method :url :status :res[content-length] - :response-time ms :body")
 
 
 const logFormat = format.printf(({ level, message, timestamp }) => `[${timestamp}] ${level.toUpperCase()}: ${message}`)
