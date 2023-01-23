@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 import config from "./config"
 
-const { MONGODB_URI, ENVIRONMENT, MONGODB_TEST_URI } = config
+const { MONGODB_URI, ENVIRONMENT, MONGODB_DEV_URI } = config
 
 import { logger } from "./logger"
 
@@ -12,13 +12,13 @@ const connectToDatabase = async () => {
     logger.info("Attempting connecting to database")
     if (ENVIRONMENT === "test" || ENVIRONMENT === "development") {
       logger.info(`Connecting to DEV database because env was set to: ${ENVIRONMENT}`)
-      if(!MONGODB_TEST_URI) throw new Error("MONGODB_TEST_URI is not defined in .env file, and ENVIRONMENT was set to " + ENVIRONMENT)
-      await mongoose.connect(MONGODB_TEST_URI)
+      if(!MONGODB_DEV_URI) throw new Error("MONGODB_DEV_URI is not defined in .env file, and ENVIRONMENT was set to " + ENVIRONMENT)
+      await mongoose.connect(MONGODB_DEV_URI)
 
     } else{
       logger.info(`Connecting to production database`)
       await mongoose.connect(MONGODB_URI)
-      logger.info(`Successfully connected to database`)
+      logger.info(`Successfully connected to production database`)
     }
   } catch (error) {
     logger.error("Connection to database failed. Error below");
