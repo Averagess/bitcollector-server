@@ -12,9 +12,6 @@ app.use(express.json());
 app.use(httpConsoleLogger);
 app.use(fileLogger);
 app.use(authenticator);
-
-// app.use(blockOutsideConnections);
-
 app.use("/", getRouter);
 app.use("/", postRouter);
 
