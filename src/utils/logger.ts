@@ -33,7 +33,7 @@ const httpConsoleLogger = morgan(":timestamp :remote-addr :authKey :method :url 
 const logFormat = format.printf(({ level, message, timestamp }) => `[${timestamp}] ${level.toUpperCase()}: ${message}`)
 const logger = winston.createLogger({
     level: 'info',
-    format: format.combine(format.timestamp({format: new Date().toLocaleString()}), logFormat),
+    format: format.combine(format.timestamp({format: "DD.MM.YYYY HH.mm.ss"}), logFormat),
     defaultMeta: { service: 'user-service' },
     transports: [
       new transports.Console(),
