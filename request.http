@@ -11,8 +11,8 @@ POST http://localhost:3000/initPlayer
 Content-Type: application/json
 
 {
-  "discordId": "2234356",
-  "discordDisplayName": "Average (fake)"
+  "discordId": "HEHE",
+  "discordDisplayName": "Jon Poe"
 }
 ###
 POST http://localhost:3000/checkBalance
@@ -26,8 +26,8 @@ POST http://localhost:3000/buyItem
 Content-Type: application/json
 
 {
-  "discordId": "123456",
-  "itemName": "TRS-80 Model 1"
+  "discordId": "456",
+  "itemName": "1"
 }
 ###
 POST http://localhost:3000/updatePlayer
@@ -42,9 +42,39 @@ POST http://localhost:3000/getShopForPlayer
 Content-Type: application/json
 
 {
-  "discordId": "123456"
+  "discordId": "184366854674972672"
 }
 
 ###
 GET http://localhost:3000/allPlayers
 ###
+POST http://localhost:3000/addBitToPlayer
+Content-Type: application/json
+Authorization: Bearer PwdkIEkslESQweFso1Odw3DxC22Ax4
+
+{
+  "discordId": "123"
+}
+###
+POST http://localhost:3000/blacklistPlayer
+Content-Type: application/json
+
+{
+  "discordId": "184366854674972672"
+}
+###
+POST http://localhost:3000/unblacklistPlayer
+Content-Type: application/json
+
+{
+  "discordId": "184366854674972672"
+}
+
+###
+
+POST http://localhost:3000/redeemDaily
+Content-Type: application/json
+
+{
+  "discordId": "184366854674972672"
+}
