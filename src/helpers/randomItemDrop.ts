@@ -16,5 +16,5 @@ const randomItemDrop = (): Item => {
 
   return items[randomIndex];
 }
-console.log(randomItemDrop())
+
 export default randomItemDrop;
