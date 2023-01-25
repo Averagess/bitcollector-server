@@ -309,9 +309,45 @@ router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest, res) =>
 router.post("/openCrate", playerExtractor, async (req: ExtendedRequest, res) => {
   const player = req.player
 
-    await player.save({timestamps: false})
-    res.send(resObject)
+  if(player.unopenedCrates <= 0) return res.status(409).json({ error: "no crates to open"})
+
+  const resObject = {
+    balanceReward: null,
+    itemReward: {name: null, amount: null, cps: null, price: null},
   }
+
+  const oldBalance = BigInt(player.balance as string)
+  const cps = player.cps
+  const updatedAt = player.updatedAt
+
+  const balanceReward = Math.round(Math.random() * 1500)
+
+  player.balance = (balanceUpdater({ oldBalance, cps, updatedAt}) + BigInt(balanceReward)).toString()
+  resObject.balanceReward = balanceReward
+
+  player.unopenedCrates -= 1
+  player.openedCrates +=  1
+
+  const randomItem = randomItemDrop()
+  const randomAmount = Math.round(Math.random() * 10)
+
+  const itemInInventory = player.inventory.find(item => item.name === randomItem.name)
+
+  resObject.itemReward = {...randomItem, amount: randomAmount, cps: Math.round(randomItem.cps * randomAmount * 100) / 100}
+
+  if(itemInInventory) {
+    itemInInventory.amount += randomAmount
+    itemInInventory.cps = Math.round(randomItem.cps * itemInInventory.amount * 100) / 100
+    player.inventory = player.inventory.map(item => item.name === randomItem.name ? itemInInventory : item)
+  } else {
+    player.inventory.push({...randomItem, amount: randomAmount, cps: Math.round(randomItem.cps * randomAmount * 100) / 100})
+  }
+
+  const newCps = player.inventory.reduce((acc, item) => acc + item.cps, 0)
+  player.cps = Math.round(newCps * 100) / 100
+
+  await player.save()
+  res.send(resObject)
 })
 
 export default router;
