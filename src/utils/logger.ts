@@ -3,7 +3,7 @@ import { createStream } from "rotating-file-stream";
 import winston, { transports, format } from "winston";
 import "winston-daily-rotate-file";
 
-morgan.token("timestamp", () => `[${new Date().toLocaleString()}]`);
+morgan.token("timestamp", () => `[${new Date().toLocaleString("fi-FI")}]`);
 morgan.token("authKey", (req: any) => {
   if (req.headers.authorization) {
     const [type, key] = req.headers.authorization.split(" ");
