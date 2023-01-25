@@ -66,7 +66,7 @@ const updateLeaderboard = async () => {
   nextUpdate.setMinutes(next30or00minute);
 
   leaderBoard.nextUpdate = nextUpdate;
-  logger.info(`Leaderboard updated successfully, next update is ${nextUpdate.toLocaleString() }`);
+  logger.info(`Leaderboard updated successfully, next update is ${nextUpdate.toLocaleString("fi-FI") }`);
 };
 
 router.get("/allPlayers", async (_req, res) => {
