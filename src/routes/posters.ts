@@ -6,6 +6,7 @@ import Player, { Item } from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
 import playerExtractor from "../middleware/playerExtractor";
 import { ExtendedRequest } from "../types";
+import randomItemDrop from "../helpers/randomItemDrop";
 
 const router = Router();
 
