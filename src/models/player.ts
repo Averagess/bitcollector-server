@@ -24,6 +24,8 @@ export interface PlayerInterface {
   inventory: InventoryItem[]
   lastDaily: Date
   dailyCount: number
+  unopenedCrates: number
+  openedCrates: number
   blacklisted: { reason: string, started: Date }
   blacklistHistory?: { reason: string, started: Date, ended: Date }[]
   createdAt: Date
@@ -54,6 +56,14 @@ const PlayerSchema = new mongoose.Schema<PlayerInterface>({
     default: null,
   },
   dailyCount: {
+    type: Number,
+    default: 0
+  },
+  unopenedCrates: {
+    type: Number,
+    default: 0
+  },
+  openedCrates: {
     type: Number,
     default: 0
   },
