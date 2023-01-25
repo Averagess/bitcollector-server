@@ -297,10 +297,17 @@ router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest, res) =>
 
     player.cps = Math.round(newCps * 100) / 100
 
-      resObject.itemReward.name = randomItem.name
-      resObject.itemReward.amount = randomAmount
-      resObject.itemReward.cps = Math.round(itemInShop.cps * randomAmount*100) / 100
-    }
+    resObject.itemReward.name = randomItem.name
+    resObject.itemReward.amount = randomAmount
+    resObject.itemReward.cps = Math.round(itemInShop.cps * randomAmount*100) / 100
+  }
+
+  await player.save()
+  res.send(resObject)
+})
+
+router.post("/openCrate", playerExtractor, async (req: ExtendedRequest, res) => {
+  const player = req.player
 
     await player.save({timestamps: false})
     res.send(resObject)
