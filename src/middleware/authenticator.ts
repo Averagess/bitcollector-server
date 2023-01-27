@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 
-const keys = ["PwdkIEkslESQweFso1Odw3DxC22Ax4"];
+import config from "../utils/config";
+const { ADMIN_TOKEN } = config
+
+const keys = ["PwdkIEkslESQweFso1Odw3DxC22Ax4", ADMIN_TOKEN];
 
 const authenticator = (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
