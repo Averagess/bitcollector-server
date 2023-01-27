@@ -43,6 +43,9 @@ services:
       - PORT=3000
       - MONGODB_URI=<URI FOR MONGODB>
       - NODE_ENV=<PRODUCTION | DEVELOPMENT>
+      - ADMIN_USERNAME=<ADMIN USERNAME FOR LOGIN>
+      - ADMIN_PASSWORD=<ADMIN PASSWORD FOR LOGIN>
+      - ADMIN_TOKEN=<ADMIN TOKEN THAT IS ACCEPTED>
     volumes:
       - ./:/src/server
     ports: 
