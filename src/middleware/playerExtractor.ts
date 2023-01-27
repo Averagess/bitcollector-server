@@ -15,6 +15,8 @@ const playerExtractor = async (req: ExtendedRequest, res: Response, next: NextFu
   const player = await Player.findOne({ discordId })
   if(!player) return res.status(404).json({ error: "Player not found" })
 
+  if(player.blacklisted) return res.status(403).json({ error: "Player is blacklisted" }) // TODO: Add a reason (if black
+
   req.player = player
   next()
 }
