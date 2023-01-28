@@ -1,4 +1,4 @@
-import { Item } from "./models/player";
+import { Item } from "./types";
 
 const items: Item[] = [
   {
@@ -18,53 +18,68 @@ const items: Item[] = [
   },
   {
     name: "TRS-80 Model 4P",
-    price: 500,
-    cps: 1.5,
-  },
-  {
-    name: "Radio Shack Color Computer 1",
-    price: 5000,
-    cps: 2.5,
-  },
-  {
-    name: "Raspberry Pi",
-    price: 10000,
+    price: 1000,
     cps: 5,
   },
   {
+    name: "Radio Shack Color Computer 1",
+    price: 10_000,
+    cps: 10,
+  },
+  {
+    name: "Raspberry Pi",
+    price: 20_000,
+    cps: 15,
+  },
+  {
     name: "Raspberry Pi 2",
-    price: 50000,
-    cps: 50,
+    price: 50_000,
+    cps: 25,
   },
   {
     name: "Raspberry Pi 3",
-    price: 100000,
-    cps: 100,
+    price: 100_000,
+    cps: 50,
   },
   {
     name: "NVIDIA Jetson Nano",
-    price: 500000,
-    cps: 500,
+    price: 500_000,
+    cps: 100,
   },
   {
     name: "NVIDIA Jetson Xavier NX",
-    price: 1000000,
-    cps: 1000,
+    price: 1_000_000,
+    cps: 250,
   },
   {
     name: "NVIDIA Geforce RTX 2080 Ti",
-    price: 5000000,
-    cps: 5000,
+    price: 5_000_000,
+    cps: 500,
   },
   {
     name: "NVIDIA Geforce RTX 3090",
-    price: 10000000,
-    cps: 100000,
+    price: 20_000_000,
+    cps: 10_000,
   },
   {
     name: "NVIDIA Tesla V100",
-    price: 5000000000,
-    cps: 1000000,
+    price: 50_000_000_000,
+    cps: 1_000_000,
+  },
+  {
+    name: "NVIDIA Tesla A100",
+    price: 100_000_000_000,
+    cps: 5_000_000,
+  },
+  {
+    name: "NVIDIA Tesla T4",
+    price: 1_500_000_000_000,
+    cps: 100_000_000,
+  },
+  {
+    name: "NVIDIA Tesla V100",
+    price: 5_000_000_000_000,
+    cps: 1_000_000_000,
   }
 ]
 

@@ -1,9 +1,6 @@
-interface Arguments {
-  oldBalance: bigint;
-  cps: number;
-  updatedAt: Date;
-}
-const balanceUpdater = ({ oldBalance, cps, updatedAt }: Arguments) => {
+import { BalanceUpdaterArguments } from '../types';
+
+const balanceUpdater = ({ oldBalance, cps, updatedAt }: BalanceUpdaterArguments) => {
   const secondsSinceLastUpdate = Math.floor((Date.now() - updatedAt.getTime()) / 1000)
   const newBalance = oldBalance + BigInt(Math.floor(cps) * secondsSinceLastUpdate)
 

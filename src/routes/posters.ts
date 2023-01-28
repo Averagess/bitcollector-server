@@ -2,10 +2,14 @@ import { logger } from "../utils/logger";
 import { Router } from "express";
 
 import items from "../items";
-import Player, { Item } from "../models/player";
+import Player from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
 import playerExtractor from "../middleware/playerExtractor";
 import { ExtendedRequest } from "../types";
+import { isString } from "../utils/isString";
+import randomItemDrop from "../helpers/randomItemDrop";
+
+import { Item } from "../types";
 
 const router = Router();
 
@@ -153,6 +157,9 @@ router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
 router.post("/updatePlayer", playerExtractor,async (req: ExtendedRequest, res) => {
   const player = req.player
 
+  const discordName = isString(req.body.discordDisplayName) ? req.body.discordDisplayName : null
+  if(discordName && discordName !== player.discordDisplayName) player.discordDisplayName = discordName;
+
   const secondsSinceLastUpdate = Math.floor(
     (Date.now() - new Date(player.updatedAt).getTime()) / 1000
   );
@@ -180,6 +187,35 @@ router.post("/updatePlayer", playerExtractor,async (req: ExtendedRequest, res) =
 
   res.send(updatedPlayer);
 });
+
+router.post("/updateTwoPlayers", async (req,res) => {
+  const { targetId, clientId } = req.body
+
+  if(!isString(targetId) || !isString(clientId)) return res.status(400).json({error: "either both or one of the ids are missing or incorrect type"})
+
+  const client = await Player.findOne({discordId: clientId})
+  const target = await Player.findOne({discordId: targetId})
+
+  if(!client) return res.status(404).json({error: "client not found"})
+  if(!target) return res.status(404).json({error: "target not found"})
+
+  const clientOldBalance = BigInt(client.balance as string)
+  const clientCps = client.cps;
+  const clientUpdatedAt = client.updatedAt
+  const clientNewBalance = balanceUpdater({ oldBalance: clientOldBalance, cps: clientCps, updatedAt: clientUpdatedAt })
+
+  const targetOldBalance = BigInt(target.balance as string)
+  const targetCps = target.cps;
+  const targetUpdatedAt = target.updatedAt
+  const targetNewBalance = balanceUpdater({ oldBalance: targetOldBalance, cps: targetCps, updatedAt: targetUpdatedAt })
+
+  client.balance = clientNewBalance.toString()
+  target.balance = targetNewBalance.toString()
+
+  await Player.bulkSave([client, target])
+
+  res.json({client, target})
+})
 
 router.post("/addBitToPlayer",async (req, res) => {
   
@@ -248,58 +284,105 @@ router.post("/unblacklistPlayer", playerExtractor,async (req: ExtendedRequest,re
   }
 })
 
-router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest,res) => {
+router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest, res) => {
   const player = req.player
-  // If this is false, its the first time the player has redeemed daily. Otherwise we create a new date object from the lastDaily property
+  // If this is falsy ( null ), its the first time the player has redeemed daily. Otherwise we create a new date object from the lastDaily property
   const hoursSinceLastRedeem = player.lastDaily ? Math.floor(Date.now() - new Date(player.lastDaily).getTime()) / 1000 / 60 / 60 : null
-  
 
   const resObject = {
     balanceReward: null,
     itemReward: {name: null, amount: null, cps: null},
   }
 
-  if( hoursSinceLastRedeem < 24 && hoursSinceLastRedeem !== null) return res.status(409).json({ error: "daily already redeemed", hoursSinceLastRedeem });
+  if(hoursSinceLastRedeem < 24 && hoursSinceLastRedeem !== null) return res.status(409).json({ error: "daily already redeemed", hoursSinceLastRedeem });
   
-  else {
-    player.dailyCount = player.dailyCount + 1
-    player.lastDaily = new Date()
+  const oldBalance = BigInt(player.balance as string)
+  const cps = player.cps;
+  const updatedAt = player.updatedAt
+  player.balance = balanceUpdater({ oldBalance, cps, updatedAt }).toString()
+  
 
-    // default daily reward
-    resObject.balanceReward = 100
+  player.dailyCount += 1
+  player.lastDaily = new Date()
 
-    // save the new balance
-    player.balance = (BigInt(player.balance as string) + BigInt(100)).toString()
+  // default daily reward
+  resObject.balanceReward = 100
 
-    // 50 50 chance
-    const shouldGiveItem = Math.round(Math.random()) === 1
+  // add 100 to the players balance
+  player.balance = (BigInt(player.balance as string) + BigInt(100)).toString()
 
-    if(shouldGiveItem && player.inventory.length > 0){
+  // 50 50 chance
+  const shouldGiveItem = Math.round(Math.random()) === 1
 
-      // get the random item from the players inventory
-      const randomItem = player.inventory[Math.floor(Math.random() * player.inventory.length)]
-      const itemInShop = items.find(item => item.name === randomItem.name)
+  if(shouldGiveItem && player.inventory.length > 0){
 
-      let randomAmount = Math.round(Math.random() * 10)
-      if(!randomAmount) randomAmount = 1;
+    // get the random item from the players inventory
+    const randomItem = player.inventory[Math.floor(Math.random() * player.inventory.length)]
+    const itemInShop = items.find(item => item.name === randomItem.name)
 
-      randomItem.amount += randomAmount
-      
-      // Round the cps 2 decimals
-      randomItem.cps = Math.round(itemInShop.cps * randomItem.amount * 100) / 100
+    let randomAmount = Math.round(Math.random() * 10)
+    if(!randomAmount) randomAmount = 1;
 
-      const newCps = player.inventory.reduce((acc, item) => acc + item.cps, 0)
+    randomItem.amount += randomAmount
+    
+    // Round the cps 2 decimals
+    randomItem.cps = Math.round(itemInShop.cps * randomItem.amount * 100) / 100
 
-      player.cps = Math.round(newCps * 100) / 100
+    const newCps = player.inventory.reduce((acc, item) => acc + item.cps, 0)
 
-      resObject.itemReward.name = randomItem.name
-      resObject.itemReward.amount = randomAmount
-      resObject.itemReward.cps = Math.round(itemInShop.cps * randomAmount*100) / 100
-    }
+    player.cps = Math.round(newCps * 100) / 100
 
-    await player.save({timestamps: false})
-    res.send(resObject)
+    resObject.itemReward.name = randomItem.name
+    resObject.itemReward.amount = randomAmount
+    resObject.itemReward.cps = Math.round(itemInShop.cps * randomAmount*100) / 100
   }
+
+  await player.save()
+  res.send(resObject)
+})
+
+router.post("/openCrate", playerExtractor, async (req: ExtendedRequest, res) => {
+  const player = req.player
+
+  if(player.unopenedCrates <= 0) return res.status(409).json({ error: "no crates to open"})
+
+  const resObject = {
+    balanceReward: null,
+    itemReward: {name: null, amount: null, cps: null, price: null},
+  }
+
+  const oldBalance = BigInt(player.balance as string)
+  const cps = player.cps
+  const updatedAt = player.updatedAt
+
+  const balanceReward = Math.round(Math.random() * 1500)
+
+  player.balance = (balanceUpdater({ oldBalance, cps, updatedAt}) + BigInt(balanceReward)).toString()
+  resObject.balanceReward = balanceReward
+
+  player.unopenedCrates -= 1
+  player.openedCrates +=  1
+
+  const randomItem = randomItemDrop()
+  const randomAmount = Math.round(Math.random() * 10)
+
+  const itemInInventory = player.inventory.find(item => item.name === randomItem.name)
+
+  resObject.itemReward = {...randomItem, amount: randomAmount, cps: Math.round(randomItem.cps * randomAmount * 100) / 100}
+
+  if(itemInInventory) {
+    itemInInventory.amount += randomAmount
+    itemInInventory.cps = Math.round(randomItem.cps * itemInInventory.amount * 100) / 100
+    player.inventory = player.inventory.map(item => item.name === randomItem.name ? itemInInventory : item)
+  } else {
+    player.inventory.push({...randomItem, amount: randomAmount, cps: Math.round(randomItem.cps * randomAmount * 100) / 100})
+  }
+
+  const newCps = player.inventory.reduce((acc, item) => acc + item.cps, 0)
+  player.cps = Math.round(newCps * 100) / 100
+
+  await player.save()
+  res.send(resObject)
 })
 
 export default router;

@@ -1,34 +1,11 @@
 import mongoose from 'mongoose'
 import mongooseLong from 'mongoose-long'
 
+import { PlayerInterface } from '../types'
+
 mongooseLong(mongoose)
 
-export interface Item {
-  name: string
-  price: number
-  cps: number
-}
-
-interface InventoryItem extends Item {
-  amount: number
-}
-
 const Long = mongoose.Schema.Types.Long
-
-
-export interface PlayerInterface {
-  discordDisplayName: string
-  discordId: string
-  balance: typeof Long | string
-  cps: number
-  inventory: InventoryItem[]
-  lastDaily: Date
-  dailyCount: number
-  blacklisted: { reason: string, started: Date }
-  blacklistHistory?: { reason: string, started: Date, ended: Date }[]
-  createdAt: Date
-  updatedAt: Date
-}
 
 const PlayerSchema = new mongoose.Schema<PlayerInterface>({
   discordDisplayName: {
@@ -54,6 +31,14 @@ const PlayerSchema = new mongoose.Schema<PlayerInterface>({
     default: null,
   },
   dailyCount: {
+    type: Number,
+    default: 0
+  },
+  unopenedCrates: {
+    type: Number,
+    default: 0
+  },
+  openedCrates: {
     type: Number,
     default: 0
   },

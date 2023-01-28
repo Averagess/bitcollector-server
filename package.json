@@ -1,15 +1,17 @@
 {
   "name": "bitcollector-server",
   "packageManager": "yarn@3.3.1",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./build/server.js",
     "build": "tsc",
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --ignore-watch node_modules ./src/server.ts",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "populateDB": "cross-env NODE_ENV=development ts-node ./src/scripts/populateDevData.ts"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",

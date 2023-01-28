@@ -7,22 +7,11 @@ import Player from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
 import player from "../models/player";
 
+import { LeaderboardObject } from "../types"
+
 const router = Router();
 
-interface PlayerInLeaderboard {
-  discordDisplayName: string;
-  discordId: string;
-  cps: number;
-  balance: string;
-}
-
-interface leaderboard {
-  players: PlayerInLeaderboard[] | null;
-  createdAt: Date | null;
-  nextUpdate: Date | null;
-}
-
-const leaderBoard: leaderboard = {
+const leaderBoard: LeaderboardObject = {
   players: null,
   createdAt: null,
   nextUpdate: null,
@@ -66,7 +55,7 @@ const updateLeaderboard = async () => {
   nextUpdate.setMinutes(next30or00minute);
 
   leaderBoard.nextUpdate = nextUpdate;
-  logger.info(`Leaderboard updated successfully, next update is ${nextUpdate.toLocaleString() }`);
+  logger.info(`Leaderboard updated successfully, next update is ${nextUpdate.toLocaleString("fi-FI") }`);
 };
 
 router.get("/allPlayers", async (_req, res) => {
