@@ -7,7 +7,8 @@
     "build": "tsc",
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --ignore-watch node_modules ./src/server.ts",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "populateDB": "cross-env NODE_ENV=development ts-node ./src/scripts/populateDevData.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
