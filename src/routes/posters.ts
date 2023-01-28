@@ -2,12 +2,14 @@ import { logger } from "../utils/logger";
 import { Router } from "express";
 
 import items from "../items";
-import Player, { Item } from "../models/player";
+import Player from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
 import playerExtractor from "../middleware/playerExtractor";
 import { ExtendedRequest } from "../types";
 import { isString } from "../utils/isString";
 import randomItemDrop from "../helpers/randomItemDrop";
+
+import { Item } from "../types";
 
 const router = Router();
 
