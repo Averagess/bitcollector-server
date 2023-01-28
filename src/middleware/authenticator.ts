@@ -14,13 +14,10 @@ const authenticator = (req: Request, res: Response, next: NextFunction) => {
 
   const [type, key] = authorization.split(" ");
 
-  if (type !== "Bearer") {
+  if (type !== "Bearer" || !keys.includes(key)) {
     return res.status(401).json({ error: "Unauthorized" }); 
   }
 
-  if (!keys.includes(key)) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
 
   next();
 };
