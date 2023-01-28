@@ -188,6 +188,35 @@ router.post("/updatePlayer", playerExtractor,async (req: ExtendedRequest, res) =
   res.send(updatedPlayer);
 });
 
+router.post("/updateTwoPlayers", async (req,res) => {
+  const { targetId, clientId } = req.body
+
+  if(!isString(targetId) || !isString(clientId)) return res.status(400).json({error: "either both or one of the ids are missing or incorrect type"})
+
+  const client = await Player.findOne({discordId: clientId})
+  const target = await Player.findOne({discordId: targetId})
+
+  if(!client) return res.status(404).json({error: "client not found"})
+  if(!target) return res.status(404).json({error: "target not found"})
+
+  const clientOldBalance = BigInt(client.balance as string)
+  const clientCps = client.cps;
+  const clientUpdatedAt = client.updatedAt
+  const clientNewBalance = balanceUpdater({ oldBalance: clientOldBalance, cps: clientCps, updatedAt: clientUpdatedAt })
+
+  const targetOldBalance = BigInt(target.balance as string)
+  const targetCps = target.cps;
+  const targetUpdatedAt = target.updatedAt
+  const targetNewBalance = balanceUpdater({ oldBalance: targetOldBalance, cps: targetCps, updatedAt: targetUpdatedAt })
+
+  client.balance = clientNewBalance.toString()
+  target.balance = targetNewBalance.toString()
+
+  await Player.bulkSave([client, target])
+
+  res.json({client, target})
+})
+
 router.post("/addBitToPlayer",async (req, res) => {
   
   const { discordId } = req.body;
