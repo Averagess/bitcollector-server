@@ -16,8 +16,8 @@ const playerNames = [
 
 const players = playerNames.map((player, index) => {
   const discordDisplayName = player + `#${1000 * index}`
-  const discordId = (Math.random() * 100000000000000).toString();
-  const balance = (Math.random() * 10000000000000).toString()
+  const discordId = Math.floor(Math.random() * 100000000000000).toString();
+  const balance = Math.floor(Math.random() * 10000000000000).toString()
   const cps = (Math.random() * 10000000000000).toString()
 
   const newPlayer = new Player({
