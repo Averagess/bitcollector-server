@@ -1,4 +1,4 @@
-import { Item } from "./models/player";
+import { Item } from "./types";
 
 const items: Item[] = [
   {
