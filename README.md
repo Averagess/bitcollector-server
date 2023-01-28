@@ -2,6 +2,9 @@
 
 Response for creating, reading, updating, deleting player data from database and delivering it to our Discord bot
 
+# Populating your MongoDB with development data
+you can run the script for this by using the script "populateDB" defined in package.json
+
 # How to run
 Clone both the server and bot from github, after that build both Dockerfiles from the bot and this directory.
 Then make an docker-compose.yaml file at the root of both directories.
