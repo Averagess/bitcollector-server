@@ -6,6 +6,7 @@ import Player, { Item } from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
 import playerExtractor from "../middleware/playerExtractor";
 import { ExtendedRequest } from "../types";
+import { isString } from "../utils/isString";
 import randomItemDrop from "../helpers/randomItemDrop";
 
 const router = Router();
@@ -153,6 +154,9 @@ router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
 
 router.post("/updatePlayer", playerExtractor,async (req: ExtendedRequest, res) => {
   const player = req.player
+
+  const discordName = isString(req.body.discordDisplayName) ? req.body.discordDisplayName : null
+  if(discordName && discordName !== player.discordDisplayName) player.discordDisplayName = discordName;
 
   const secondsSinceLastUpdate = Math.floor(
     (Date.now() - new Date(player.updatedAt).getTime()) / 1000
