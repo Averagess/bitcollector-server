@@ -1,9 +1,9 @@
 import mongoose from "mongoose"
 import config from "./config"
 
-const { MONGODB_URI, ENVIRONMENT, MONGODB_DEV_URI } = config
-
 import { logger } from "./logger"
+
+const { MONGODB_URI, ENVIRONMENT, MONGODB_DEV_URI } = config
 
 mongoose.set("strictQuery", false)
 
