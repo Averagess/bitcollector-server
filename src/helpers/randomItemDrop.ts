@@ -1,5 +1,5 @@
 import items from "../items";
-import { Item } from "../models/player";
+import { Item } from "../types";
 
 function weightedRandom(min: number, max: number) {
   return Math.round(max / (Math.random() * max + min));
