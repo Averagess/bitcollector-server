@@ -7,22 +7,11 @@ import Player from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
 import player from "../models/player";
 
+import { LeaderboardObject } from "../types"
+
 const router = Router();
 
-interface PlayerInLeaderboard {
-  discordDisplayName: string;
-  discordId: string;
-  cps: number;
-  balance: string;
-}
-
-interface leaderboard {
-  players: PlayerInLeaderboard[] | null;
-  createdAt: Date | null;
-  nextUpdate: Date | null;
-}
-
-const leaderBoard: leaderboard = {
+const leaderBoard: LeaderboardObject = {
   players: null,
   createdAt: null,
   nextUpdate: null,
