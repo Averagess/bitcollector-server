@@ -1,4 +1,4 @@
-const morgan = require("morgan");
+import morgan from "morgan";
 import { createStream } from "rotating-file-stream";
 import winston, { transports, format } from "winston";
 import "winston-daily-rotate-file";

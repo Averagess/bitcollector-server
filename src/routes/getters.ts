@@ -1,5 +1,5 @@
 import { Router } from "express";
-const cron = require("node-cron");
+import cron from "node-cron";
 
 import balanceUpdater from "../helpers/balanceUpdater";
 import items from "../items";
