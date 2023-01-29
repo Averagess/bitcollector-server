@@ -1,11 +1,7 @@
 import Player from "../models/player";
 import { NextFunction,  Response } from "express";
 import { ExtendedRequest } from "../types";
-
-const isString = (value: unknown): value is string => {
-  if(typeof value === "string" || value instanceof String) return true
-  return false
-}
+import { isString } from "../utils/isString";
 
 const playerExtractor = async (req: ExtendedRequest, res: Response, next: NextFunction) => {
   const { discordId } = req.body
