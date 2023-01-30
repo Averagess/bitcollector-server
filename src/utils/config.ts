@@ -8,7 +8,7 @@ else if(!process.env.ADMIN_USERNAME) throw new Error("ADMIN_USERNAME is not defi
 else if(!process.env.ADMIN_PASSWORD) throw new Error("ADMIN_PASSWORD is not defined in .env file");
 else if(!process.env.ADMIN_TOKEN) throw new Error("ADMIN_TOKEN is not defined in .env file");
 else if(!process.env.BOT_TOKEN) throw new Error("BOT_TOKEN is not defined in .env file")
-else if(!process.env.MONGODB_DEV_URI && (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "dev")) logger.warn("MONGODB_DEV_URI is not defined in .env file. Tests will throw an error if you try to run them.")
+else if(!process.env.MONGODB_DEV_URI && (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "dev")) throw new Error("ENV was set to test or dev but MONGODB_DEV_URI wasn not defined in .env file");
 
 const config = {
   PORT: process.env.PORT || 3000,
