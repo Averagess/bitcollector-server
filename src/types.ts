@@ -21,7 +21,7 @@ export interface PlayerInterface {
   balance: typeof Long | string
   cps: number
   inventory: InventoryItem[]
-  lastDaily: Date
+  lastDaily: Date | null
   dailyCount: number
   unopenedCrates: number
   openedCrates: number
