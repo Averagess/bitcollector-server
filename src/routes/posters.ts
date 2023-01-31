@@ -348,7 +348,7 @@ router.post("/openCrate", playerExtractor, async (req: ExtendedRequest, res) => 
 
   const resObject = {
     balanceReward: null,
-    itemReward: {name: null, amount: null, cps: null, price: null},
+    itemReward: { name: null, amount: null, cps: null, price: null },
   }
 
   const oldBalance = BigInt(player.balance as string)
