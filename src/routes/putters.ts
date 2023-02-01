@@ -1,4 +1,4 @@
-import Player from "../models/player";
+import Player from "../models/Player";
 import { Router } from "express";
 const router = Router()
 

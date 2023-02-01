@@ -1,6 +1,6 @@
 import { connectToDatabase } from "../utils/db"
 
-import Player from "../models/player"
+import Player from "../models/Player"
 
 const playerNames = [
   'John',

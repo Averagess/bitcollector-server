@@ -2,7 +2,7 @@ import { logger } from "../utils/logger";
 import { Router } from "express";
 
 import items from "../items";
-import Player from "../models/player";
+import Player from "../models/Player";
 import balanceUpdater from "../helpers/balanceUpdater";
 import playerExtractor from "../middleware/playerExtractor";
 import { ExtendedRequest } from "../types";

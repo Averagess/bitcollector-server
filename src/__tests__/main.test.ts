@@ -2,7 +2,7 @@ import app from "../app";
 import { connectToDatabase, disconnectFromDatabase } from "../utils/db";
 import { BOT_TOKEN } from "../utils/config";
 const supertest = require("supertest");
-import Player from "../models/player";
+import Player from "../models/Player";
 import balanceUpdater from "../helpers/balanceUpdater";
 
 const api = supertest(app);

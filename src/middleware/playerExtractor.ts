@@ -1,4 +1,4 @@
-import Player from "../models/player";
+import Player from "../models/Player";
 import { NextFunction,  Response } from "express";
 import { ExtendedRequest } from "../types";
 import { isString } from "../utils/isString";
