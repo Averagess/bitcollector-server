@@ -1,8 +1,6 @@
 import { Router } from 'express';
 
-import config from '../utils/config';
-const { ADMIN_USERNAME, ADMIN_PASSWORD, ADMIN_TOKEN } = config;
-
+import { ADMIN_USERNAME, ADMIN_PASSWORD, ADMIN_TOKEN } from '../utils/config';
 const router = Router();
 
 

@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-import config from "../utils/config";
-const { ADMIN_TOKEN, BOT_TOKEN } = config
+import { ADMIN_TOKEN, BOT_TOKEN } from "../utils/config";
 
 const keys = [BOT_TOKEN, ADMIN_TOKEN];
 

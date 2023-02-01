@@ -3,9 +3,8 @@ import Player from "../models/player";
 const webhookRouter = Router();
 
 import { isString } from "../utils/isString";
-import config from "../utils/config";
+import { ENVIRONMENT } from "../utils/config";
 import { logger } from "../utils/logger";
-const { ENVIRONMENT } = config;
 
 webhookRouter.post("/vote", async (req, res) => {
   const { user, type, isWeekend } = req.body;
