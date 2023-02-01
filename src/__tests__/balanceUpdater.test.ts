@@ -23,7 +23,7 @@ describe("balanceUpdater", () => {
     expect(result).toBe(expected);
   })
 
-  it("With cps, Balance 0, should return 0 after 10 000 seconds have passed", () => {
+  it("With cps 0, Balance 0, should return 0 after 10 000 seconds have passed", () => {
     const oldBalance = BigInt(0)
     const cps = 0
     const updatedAt = new Date(Date.now() - 10_000_000)
