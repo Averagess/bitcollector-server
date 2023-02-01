@@ -33,4 +33,15 @@ describe("balanceUpdater", () => {
     const result = balanceUpdater({oldBalance, cps, updatedAt});
     expect(result).toBe(expected);
   })
+
+  it("With cps 1.5 and balance 0, should return 3 after 2 seconds have passed", () => {
+    const oldBalance = BigInt(0)
+    const cps = 1.5
+    const updatedAt = new Date(Date.now() - 2000)
+
+    const expected = BigInt(3)
+
+    const result = balanceUpdater({oldBalance, cps, updatedAt});
+    expect(result).toBe(expected);
+  })
 });
