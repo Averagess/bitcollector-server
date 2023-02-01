@@ -242,30 +242,34 @@ router.post("/resetPlayer", playerExtractor,async (req: ExtendedRequest, res) =>
   return res.send(updatedPlayer);
 });
 
-router.post("/blacklistPlayer", playerExtractor,async (req: ExtendedRequest,res) => {
-  const player = req.player
-  const { reason } = req.body;
+router.post("/blacklistPlayer",async (req: ExtendedRequest,res) => {
+  const { discordId, reason } = req.body;
 
+  if(!isString(discordId)) return res.status(400).json({ error: "missing or invalid discordId"})
+  const player = await Player.findOne({ discordId })
   if(player.blacklisted) return res.status(409).json({ error: "player already blacklisted"})
 
 
-  if(reason && (reason instanceof String || typeof reason === "string")){
-    player.blacklisted = { reason: reason.toString(), started: new Date() }
+  if(isString(reason)){
+    player.blacklisted = { reason: reason, started: new Date() }
   } else {
     player.blacklisted = { reason: "Reason not given", started: new Date() }
   }
 
   try {
-    const savedPlayer = await player.save()
+    const savedPlayer = await player.save({ timestamps: false})
     res.send(savedPlayer)
   } catch (error) {
     res.status(500).end()
   }
 })
 
-router.post("/unblacklistPlayer", playerExtractor,async (req: ExtendedRequest,res) => {
-  const player = req.player
-  if(!player.blacklisted) return res.status(409).json({ error: "player not blacklisted"})
+router.post("/unblacklistPlayer",async (req: ExtendedRequest,res) => {
+  const { discordId } = req.body;
+  if(!isString(discordId)) return res.status(400).json({ error: "missing or invalid discordId"})
+  const player = await Player.findOne({ discordId })
+  if(!player) return res.status(404).json({ error: "player not found"})
+  if(player.blacklisted === null) return res.status(409).json({ error: "player not blacklisted"})
 
   
   player.blacklistHistory.push({
