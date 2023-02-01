@@ -1,5 +1,4 @@
 import * as dotenv from 'dotenv';
-import { logger } from './logger';
 dotenv.config();
 
 
@@ -8,17 +7,13 @@ else if(!process.env.ADMIN_USERNAME) throw new Error("ADMIN_USERNAME is not defi
 else if(!process.env.ADMIN_PASSWORD) throw new Error("ADMIN_PASSWORD is not defined in .env file");
 else if(!process.env.ADMIN_TOKEN) throw new Error("ADMIN_TOKEN is not defined in .env file");
 else if(!process.env.BOT_TOKEN) throw new Error("BOT_TOKEN is not defined in .env file")
-else if(!process.env.MONGODB_DEV_URI && (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "dev")) throw new Error("ENV was set to test or dev but MONGODB_DEV_URI wasn not defined in .env file");
+else if(!process.env.MONGODB_DEV_URI && (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development")) throw new Error("ENV was set to test or dev but MONGODB_DEV_URI wasn not defined in .env file");
 
-const config = {
-  PORT: process.env.PORT || 3000,
-  ENVIRONMENT: process.env.NODE_ENV,
-  MONGODB_URI: process.env.MONGODB_URI,
-  MONGODB_DEV_URI: process.env.MONGODB_DEV_URI || null,
-  ADMIN_USERNAME: process.env.ADMIN_USERNAME,
-  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
-  ADMIN_TOKEN: process.env.ADMIN_TOKEN,
-  BOT_TOKEN: process.env.BOT_TOKEN
-}
-
-export default config;
+export const PORT = Number(process.env.PORT) || 3000
+export const ENVIRONMENT = process.env.NODE_ENV
+export const MONGODB_URI = process.env.MONGODB_URI
+export const MONGODB_DEV_URI = process.env.MONGODB_DEV_URI || null
+export const ADMIN_USERNAME = process.env.ADMIN_USERNAME
+export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
+export const ADMIN_TOKEN = process.env.ADMIN_TOKEN
+export const BOT_TOKEN = process.env.BOT_TOKEN
