@@ -1,7 +1,6 @@
 import app from "../app";
 import { connectToDatabase, disconnectFromDatabase } from "../utils/db";
-import config from "../utils/config";
-const { BOT_TOKEN } = config;
+import { BOT_TOKEN } from "../utils/config";
 const supertest = require("supertest");
 import Player from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
