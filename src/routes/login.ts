@@ -10,15 +10,11 @@ router.post("/", (req, res) => {
   const { username, password } = req.body;
   if(!username || !password) {
     res.status(400).json({error: "Username or password missing"});
-  }
-
-  if(username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+  } else if(username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
     res.status(200).json({token: ADMIN_TOKEN});
-  }
-  else {
+  } else {
     res.status(401).json({error: "Invalid username or password"});
   }
-
 })
 
 export default router;
