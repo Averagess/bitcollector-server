@@ -1,10 +1,9 @@
 import { connectToDatabase, disconnectFromDatabase } from "./utils/db";
-import config from "./utils/config";
+import { PORT } from "./utils/config";
 
 import app from "./app";
 import { logger } from "./utils/logger";
 
-const PORT = config.PORT;
 connectToDatabase();
 
 
