@@ -4,7 +4,6 @@ import config from "../utils/config";
 const { BOT_TOKEN } = config;
 const supertest = require("supertest");
 import Player from "../models/player";
-import player from "../models/player";
 import balanceUpdater from "../helpers/balanceUpdater";
 
 const api = supertest(app);
@@ -189,7 +188,7 @@ describe("test POST methods", () => {
 
   describe("POST /updatePlayer", () => {
     beforeAll(async () => {
-      await player.create({
+      await Player.create({
         discordId: "789",
         discordDisplayName: "testing updatePlayer",
         balance: 0,
@@ -305,7 +304,7 @@ describe("test POST methods", () => {
 
   describe("POST /addBitToPlayer", () => {
     beforeAll(async () => {
-      await player.create({
+      await Player.create({
         discordId: "619",
         discordDisplayName: "testing addBitToPlayer",
         balance: 0,
@@ -342,7 +341,7 @@ describe("test POST methods", () => {
 
   describe("POST /resetPlayer", () => {
     beforeAll(async () => {
-      await player.create({
+      await Player.create({
         discordId: "155",
         discordDisplayName: "testing resetPlayer",
         balance: 123,
@@ -388,7 +387,7 @@ describe("test POST methods", () => {
 
   describe("POST /blacklistPlayer", () => {
     beforeAll(async () => {
-      await player.create({
+      await Player.create({
         discordId: "blacklistMe",
         discordDisplayName: "testing blacklistPlayer",
         balance: 123,
@@ -448,7 +447,7 @@ describe("test POST methods", () => {
 
   describe("POST /unblacklistPlayer", () => {
     beforeAll(async () => {
-      await player.create({
+      await Player.create({
         discordId: "unblacklistMe",
         discordDisplayName: "testing unblacklistPlayer",
         balance: 123,
@@ -619,7 +618,7 @@ describe("test PUT methods", () => {
     });
     test("Should respond with 400 if we provide no data", async () => {
       const response = await api.put("/api/updatePlayer").set(headers);
-w      expect(response.status).toBe(400);
+      expect(response.status).toBe(400);
     });
 
     test("Should respond with 404 if we try to update a nonexisting player", async () => {
