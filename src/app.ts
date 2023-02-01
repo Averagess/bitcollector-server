@@ -7,6 +7,7 @@ import getRouter from "./routes/getters";
 import postRouter from "./routes/posters";
 import putRouter from "./routes/putters"
 import loginRouter from "./routes/login";
+import webhookRouter from "./routes/webhooks";
 
 import { httpConsoleLogger, fileLogger } from "./utils/logger";
 
@@ -20,6 +21,7 @@ app.use("/login", loginRouter) // Login route is not protected by authenticator
 app.use(authenticator);
 app.use("/api", getRouter);
 app.use("/api", postRouter);
-app.use("/api", putRouter)
+app.use("/api", putRouter);
+app.use("/webhooks", webhookRouter);
 
 export default app;
