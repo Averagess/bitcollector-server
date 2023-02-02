@@ -295,7 +295,6 @@ router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest, res) =>
 
   const resObject = {
     balanceReward: null,
-    itemReward: {name: null, amount: null, cps: null},
   }
 
   if(hoursSinceLastRedeem < 24 && hoursSinceLastRedeem !== null) return res.status(409).json({ error: "daily already redeemed", hoursSinceLastRedeem });
@@ -303,43 +302,17 @@ router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest, res) =>
   const oldBalance = BigInt(player.balance as string)
   const cps = player.cps;
   const updatedAt = player.updatedAt
-  player.balance = balanceUpdater({ oldBalance, cps, updatedAt }).toString()
+  const updatedBalance = balanceUpdater({ oldBalance, cps, updatedAt })
   
 
   player.dailyCount += 1
   player.lastDaily = new Date()
 
   // default daily reward
-  resObject.balanceReward = 100
+  resObject.balanceReward = Math.floor(Math.random() * 500 + 1)
 
-  // add 100 to the players balance
-  player.balance = (BigInt(player.balance as string) + BigInt(100)).toString()
-
-  // 50 50 chance
-  const shouldGiveItem = Math.round(Math.random()) === 1
-
-  if(shouldGiveItem && player.inventory.length > 0){
-
-    // get the random item from the players inventory
-    const randomItem = player.inventory[Math.floor(Math.random() * player.inventory.length)]
-    const itemInShop = items.find(item => item.name === randomItem.name)
-
-    let randomAmount = Math.round(Math.random() * 10)
-    if(!randomAmount) randomAmount = 1;
-
-    randomItem.amount += randomAmount
-    
-    // Round the cps 2 decimals
-    randomItem.cps = Math.round(itemInShop.cps * randomItem.amount * 100) / 100
-
-    const newCps = player.inventory.reduce((acc, item) => acc + item.cps, 0)
-
-    player.cps = Math.round(newCps * 100) / 100
-
-    resObject.itemReward.name = randomItem.name
-    resObject.itemReward.amount = randomAmount
-    resObject.itemReward.cps = Math.round(itemInShop.cps * randomAmount*100) / 100
-  }
+  // add the reward to the players balance
+  player.balance = (updatedBalance + BigInt(resObject.balanceReward)).toString()
 
   await player.save()
   res.send(resObject)
