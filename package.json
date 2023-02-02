@@ -6,7 +6,7 @@
     "start": "cross-env NODE_ENV=production node ./build/server.js",
     "build": "tsc",
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --ignore-watch node_modules ./src/server.ts",
-    "test": "jest",
+    "test": "jest src/",
     "test:watch": "jest --watch",
     "populateDB": "cross-env NODE_ENV=development ts-node ./src/scripts/populateDevData.ts"
   },

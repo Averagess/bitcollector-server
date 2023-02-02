@@ -23,9 +23,12 @@ jobs:
 
     - name: Install dependencies
       run: yarn
+    
+    - name: Build project
+      run: yarn build
 
     - name: Run tests
-      run: yarn test
+      run: yarn jest build/
       env:
         CI: true
         MONGODB_DEV_URI: mongodb://localhost:27017/test
