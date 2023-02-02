@@ -2,6 +2,7 @@
 module.exports = {
   extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   env: {
+    es2020: true,
     node: true,
     jest: true,
   },
@@ -17,7 +18,9 @@ module.exports = {
     "no-var": "error",
     "no-undef": "error",
     "prefer-const": "error",
-    "prefer-destructuring": "error",
     "no-trailing-spaces": "error",
+    "object-curly-spacing": ["error", "always"],
+    "array-bracket-spacing": ["error", "never"],
+    "space-in-parens": ["error", "never"],
   }
 };
