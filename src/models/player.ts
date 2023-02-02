@@ -1,11 +1,11 @@
-import mongoose from 'mongoose'
-import mongooseLong from 'mongoose-long'
+import mongoose from "mongoose";
+import mongooseLong from "mongoose-long";
 
-import { PlayerInterface } from '../types'
+import { PlayerInterface } from "../types";
 
-mongooseLong(mongoose)
+mongooseLong(mongoose);
 
-const Long = mongoose.Schema.Types.Long
+const Long = mongoose.Schema.Types.Long;
 
 const PlayerSchema = new mongoose.Schema<PlayerInterface>({
   discordDisplayName: {
@@ -47,9 +47,10 @@ const PlayerSchema = new mongoose.Schema<PlayerInterface>({
     default: null
   },
   blacklistHistory: [{ reason: String, started: Date, ended: Date }]
-}, { timestamps: true })
+}, { timestamps: true });
 
 PlayerSchema.set("toJSON", {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transform: (document: any, returnedObject: any) => {
     returnedObject.balance = returnedObject.balance.toString();
     delete returnedObject._id;
@@ -58,4 +59,4 @@ PlayerSchema.set("toJSON", {
 });
 
 
-export default mongoose.model<PlayerInterface>('Player', PlayerSchema)
+export default mongoose.model<PlayerInterface>("Player", PlayerSchema);

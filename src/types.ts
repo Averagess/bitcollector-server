@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from "express";
 import mongoose, { Document, Types } from "mongoose";
-import mongooseLong from 'mongoose-long'
+import mongooseLong from "mongoose-long";
 
-mongooseLong(mongoose)
+mongooseLong(mongoose);
 
-const Long = mongoose.Schema.Types.Long
+const Long = mongoose.Schema.Types.Long;
 
 export interface Item {
   name: string
@@ -21,7 +22,7 @@ export interface PlayerInterface {
   balance: typeof Long | string
   cps: number
   inventory: InventoryItem[]
-  lastDaily: Date
+  lastDaily: Date | null
   dailyCount: number
   unopenedCrates: number
   openedCrates: number

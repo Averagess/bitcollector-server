@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
-import config from "../utils/config";
-const { ADMIN_TOKEN } = config
+import { ADMIN_TOKEN, BOT_TOKEN } from "../utils/config";
 
-const keys = ["PwdkIEkslESQweFso1Odw3DxC22Ax4", ADMIN_TOKEN];
+const keys = [BOT_TOKEN, ADMIN_TOKEN];
 
 const authenticator = (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
@@ -15,7 +14,7 @@ const authenticator = (req: Request, res: Response, next: NextFunction) => {
   const [type, key] = authorization.split(" ");
 
   if (type !== "Bearer" || !keys.includes(key)) {
-    return res.status(401).json({ error: "Unauthorized" }); 
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
 

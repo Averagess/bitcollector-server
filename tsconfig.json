@@ -9,7 +9,7 @@
     "outDir": "build",
     "baseUrl": "./src",
     "paths": {
-      "@/*": [
+      "./*": [
         "./*"
       ]
     }

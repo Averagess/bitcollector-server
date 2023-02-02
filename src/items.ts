@@ -5,7 +5,7 @@ const items: Item[] = [
     name: "TRS-80 Model 1",
     price: 50,
     cps: 0.1,
-  }, 
+  },
   {
     name: "TRS-80 Model 2",
     price: 100,
@@ -81,6 +81,6 @@ const items: Item[] = [
     price: 5_000_000_000_000,
     cps: 1_000_000_000,
   }
-]
+];
 
-export default items
+export default items;
