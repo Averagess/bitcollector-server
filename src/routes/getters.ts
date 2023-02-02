@@ -32,17 +32,17 @@ const updateLeaderboard = async () => {
     return {
       discordDisplayName,
       discordId,
-      cps, 
+      cps,
       balance: newBalance
     };
   }).sort((a,b) => {
-    const aBalance = BigInt(a.balance)
-    const bBalance = BigInt(b.balance)
+    const aBalance = BigInt(a.balance);
+    const bBalance = BigInt(b.balance);
 
-    if(aBalance > bBalance) return -1
-    else if(aBalance < bBalance) return 1
-    else return 0
-  })
+    if(aBalance > bBalance) return -1;
+    else if(aBalance < bBalance) return 1;
+    else return 0;
+  });
 
   leaderBoard.players = playersWithUpdatedBalance.splice(0, 10);
   leaderBoard.createdAt = new Date();

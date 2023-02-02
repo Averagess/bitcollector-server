@@ -1,4 +1,3 @@
-/* eslint-disable prefer-destructuring */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from "express";
 import mongoose, { Document, Types } from "mongoose";

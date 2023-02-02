@@ -190,11 +190,10 @@ describe("test POST methods", () => {
       expect(response.status).toBe(404);
     });
     test("Should return with 400 if we dont have money to buy an item", async () => {
-      const poorBody = { discordId: "imPoor", itemName: "1" };
       const response = await api
         .post("/api/buyItem")
         .set(headers)
-        .send(poorBody);
+        .send({ discordId: "imPoor", itemName: "1" });
       expect(response.status).toBe(400);
     });
   });
