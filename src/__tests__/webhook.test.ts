@@ -2,7 +2,7 @@ import { BOT_TOKEN } from "../utils/config";
 import app from "../app";
 import { connectToDatabase, disconnectFromDatabase } from "../utils/db";
 import { Player } from "../models";
-const supertest = require("supertest");
+import supertest from "supertest";
 
 const api = supertest(app);
 

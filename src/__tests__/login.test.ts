@@ -1,6 +1,6 @@
 import { ADMIN_PASSWORD, ADMIN_TOKEN, ADMIN_USERNAME } from "../utils/config";
 import app from "../app";
-const supertest = require("supertest");
+import supertest from "supertest";
 const api = supertest(app);
 
 describe("Login", () => {
@@ -19,5 +19,5 @@ describe("Login", () => {
     expect(response.status).toBe(200);
     expect(response.body.token).toBeDefined();
     expect(response.body.token).toEqual(ADMIN_TOKEN);
-  })
-})
+  });
+});

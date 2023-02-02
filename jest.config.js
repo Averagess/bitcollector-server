@@ -1,8 +1,9 @@
+// eslint-disable-next-line no-undef
 module.exports = {
   verbose: true,
   testEnvironment: "node",
   testEnvironmentOptions: {
-    "url" : 'http://localhost'
+    "url" : "http://localhost"
   },
   roots: [
     "<rootDir>"
@@ -25,4 +26,4 @@ module.exports = {
     "node"
   ],
 
-}
+};

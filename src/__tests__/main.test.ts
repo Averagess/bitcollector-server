@@ -1,7 +1,7 @@
 import app from "../app";
 import { connectToDatabase, disconnectFromDatabase } from "../utils/db";
 import { BOT_TOKEN } from "../utils/config";
-const supertest = require("supertest");
+import supertest from "supertest";
 import { Player } from "../models";
 import balanceUpdater from "../helpers/balanceUpdater";
 
@@ -155,6 +155,12 @@ describe("test POST methods", () => {
         balance: 0,
         cps: 0,
       });
+      await Player.create({
+        discordId: "imRich",
+        discordDisplayName: "imRich",
+        balance: 15000,
+        cps: 0,
+      });
     });
     test("Should respond with 401 when no token is provided", async () => {
       const response = await api.post("/api/buyItem");
@@ -164,7 +170,7 @@ describe("test POST methods", () => {
       const response = await api
         .post("/api/buyItem")
         .set(headers)
-        .send({ ...body, itemName: "1" });
+        .send({ discordId: "imRich", itemName: "1" });
       expect(response.status).toBe(200);
       expect(response.body.player).toHaveProperty("discordId");
       expect(response.body.player).toHaveProperty("discordDisplayName");
@@ -180,10 +186,10 @@ describe("test POST methods", () => {
       const response = await api
         .post("/api/buyItem")
         .set(headers)
-        .send({ ...body, itemName: "9This9Doesnt9Exist" });
+        .send({ discordId: "imRich", itemName: "9This9Doesnt9Exist" });
       expect(response.status).toBe(404);
     });
-    test("Should return with 409 if we dont have money to buy an item", async () => {
+    test("Should return with 400 if we dont have money to buy an item", async () => {
       const poorBody = { discordId: "imPoor", itemName: "1" };
       const response = await api
         .post("/api/buyItem")
