@@ -1,0 +1,36 @@
+name: Run tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.1]
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Start MongoDB
+      uses: supercharge/mongodb-github-action@1.8.0
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm test
+      env:
+        CI: true
+        MONGODB_DEV_URI: mongodb://localhost:27017/test
+        MONGODB_URI: mongodb://localhost:27017/test
+        ADMIN_USERNAME: ci
+        ADMIN_PASSWORD: ci
+        ADMIN_TOKEN: ci
+        BOT_TOKEN: ci
