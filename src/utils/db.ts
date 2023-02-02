@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { MONGODB_URI, ENVIRONMENT, MONGODB_DEV_URI } from "./config"
+import { MONGODB_URI, ENVIRONMENT, MONGODB_DEV_URI, CI } from "./config"
 
 import { logger } from "./logger"
 
@@ -8,7 +8,11 @@ mongoose.set("strictQuery", false)
 const connectToDatabase = async () => {
   try {
     logger.info("Attempting connecting to database")
-    if (!ENVIRONMENT || ENVIRONMENT === "test" || ENVIRONMENT === "development") {
+    if(CI === "true" || typeof CI === "boolean" && CI) {
+      logger.info("Connecting to local database because CI was set to true")
+      await mongoose.connect("mongodb://localhost:27017/test")
+    } 
+    else if (ENVIRONMENT === "test" || ENVIRONMENT === "development") {
       logger.info(`Connecting to DEV database because env was set to: ${ENVIRONMENT}`)
       if(!MONGODB_DEV_URI) throw new Error("MONGODB_DEV_URI is not defined in .env file, and ENVIRONMENT was set to " + ENVIRONMENT)
       await mongoose.connect(MONGODB_DEV_URI)
