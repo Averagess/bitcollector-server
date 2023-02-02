@@ -216,7 +216,9 @@ describe("test POST methods", () => {
       expect(response.body).toHaveProperty("discordDisplayName");
       expect(response.body).toHaveProperty("balance");
       expect(response.body).toHaveProperty("cps");
-      expect(response.body.balance.substring(0,4)).toBe(correctAnswer.substring(0,4));
+      expect(response.body.balance.substring(0, 4)).toBe(
+        correctAnswer.substring(0, 4)
+      );
     });
 
     test("should respond with 404 if we try to update a nonexisting player", async () => {
@@ -255,9 +257,9 @@ describe("test POST methods", () => {
 
     test("Should respond with 200 and update both balances correctly", async () => {
       const response = await api
-      .post("/api/updateTwoPlayers")
-      .set(headers)
-      .send({ targetId: "111", clientId: "222" });
+        .post("/api/updateTwoPlayers")
+        .set(headers)
+        .send({ targetId: "111", clientId: "222" });
       const correctTargetBalance = balanceUpdater({
         oldBalance: 0n,
         cps: 123,
@@ -276,8 +278,12 @@ describe("test POST methods", () => {
       expect(response.body.client).toHaveProperty("discordDisplayName");
       expect(response.body.target).toHaveProperty("balance");
       expect(response.body.client).toHaveProperty("balance");
-      expect(response.body.target.balance.substring(0,4)).toBe(correctTargetBalance.substring(0,4));
-      expect(response.body.client.balance.substring(0,4)).toBe(correctClientBalance.substring(0,4));
+      expect(response.body.target.balance.substring(0, 4)).toBe(
+        correctTargetBalance.substring(0, 4)
+      );
+      expect(response.body.client.balance.substring(0, 4)).toBe(
+        correctClientBalance.substring(0, 4)
+      );
     });
 
     test("Should respond with 404 if we try to update a nonexisting player as client", async () => {
@@ -526,7 +532,7 @@ describe("test POST methods", () => {
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("balanceReward");
       expect(response.body.balanceReward).toBeGreaterThan(0);
-      expect(response.body.balanceReward).toBeLessThanOrEqual(500)
+      expect(response.body.balanceReward).toBeLessThanOrEqual(500);
       const player = await Player.findOne({ discordId: "redeemDaily" });
       expect(Number(player.balance.toString())).toBeGreaterThan(0);
       expect(Number(player.balance.toString())).toBeLessThanOrEqual(500);
@@ -609,6 +615,14 @@ describe("test POST methods", () => {
 });
 
 describe("test PUT methods", () => {
+  beforeAll(async () => {
+    await Player.create({
+      discordId: "PutTest",
+      discordDisplayName: "testing /PUT updatePlayer",
+      balance: 0,
+      cps: 0,
+    });
+  });
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${BOT_TOKEN}`,
@@ -629,18 +643,17 @@ describe("test PUT methods", () => {
         .set(headers)
         .send({ discordId: "ThisDoesntExist" });
       expect(response.status).toBe(404);
-    })
+    });
 
     test("Should respond with 200 and update the player", async () => {
-      
       const response = await api
         .put("/api/updatePlayer")
         .set(headers)
-        .send({ discordId: "123", balance: "1000" });
+        .send({ discordId: "PutTest", balance: "1000" });
       expect(response.status).toBe(200);
-      const player = await Player.findOne({ discordId: "123" });
+      const player = await Player.findOne({ discordId: "PutTest" });
       expect(player.balance.toString()).toEqual("1000");
-    })
+    });
   });
 });
 
