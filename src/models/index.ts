@@ -1,3 +1,5 @@
-import Player from "./Player";
+import player from "./player";
+
+const Player = player;
 
 export { Player };
