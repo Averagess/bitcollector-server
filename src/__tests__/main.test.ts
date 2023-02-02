@@ -518,16 +518,18 @@ describe("test POST methods", () => {
       expect(response.status).toBe(401);
     });
 
-    test("Should respond with 200 and give the player 100 bits", async () => {
+    test("Should respond with 200 and give the player from 0 to 500 bits", async () => {
       const response = await api
         .post("/api/redeemDaily")
         .set(headers)
         .send({ discordId: "redeemDaily" });
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("balanceReward");
-      expect(response.body.balanceReward).toEqual(100);
+      expect(response.body.balanceReward).toBeGreaterThan(0);
+      expect(response.body.balanceReward).toBeLessThanOrEqual(500)
       const player = await Player.findOne({ discordId: "redeemDaily" });
-      expect(player.balance.toString()).toEqual("100");
+      expect(Number(player.balance.toString())).toBeGreaterThan(0);
+      expect(Number(player.balance.toString())).toBeLessThanOrEqual(500);
       expect(player.cps).toBe(0);
     });
 
@@ -539,7 +541,8 @@ describe("test POST methods", () => {
       expect(response.status).toBe(409);
       expect(response.body.error).toEqual("daily already redeemed");
       const player = await Player.findOne({ discordId: "redeemDaily" });
-      expect(player.balance.toString()).toEqual("100");
+      expect(Number(player.balance.toString())).toBeGreaterThan(0);
+      expect(Number(player.balance.toString())).toBeLessThanOrEqual(500);
       expect(player.cps).toBe(0);
     });
 
