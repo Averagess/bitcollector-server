@@ -3,10 +3,7 @@ import { Router } from "express";
 import { ADMIN_USERNAME, ADMIN_PASSWORD, ADMIN_TOKEN } from "../utils/config";
 const router = Router();
 
-let nasty = {hey:2}
-nasty = {...nasty, 'hey':4}
-
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
   const { username, password } = req.body;
   if(!username || !password) {
     res.status(400).json({ error: "Username or password missing" });
