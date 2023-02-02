@@ -1,5 +1,5 @@
 import { Router } from "express";
-import Player from "../models/Player";
+import { Player } from "../models";
 const webhookRouter = Router();
 
 import { isString } from "../utils/isString";

@@ -3,7 +3,7 @@ import cron from "node-cron";
 
 import balanceUpdater from "../helpers/balanceUpdater";
 import items from "../items";
-import Player from "../models/Player";
+import { Player } from "../models";
 import { logger } from "../utils/logger";
 
 import { LeaderboardObject } from "../types";

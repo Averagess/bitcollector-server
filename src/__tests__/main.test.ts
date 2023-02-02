@@ -2,7 +2,7 @@ import app from "../app";
 import { connectToDatabase, disconnectFromDatabase } from "../utils/db";
 import { BOT_TOKEN } from "../utils/config";
 const supertest = require("supertest");
-import Player from "../models/Player";
+import { Player } from "../models";
 import balanceUpdater from "../helpers/balanceUpdater";
 
 const api = supertest(app);
@@ -148,6 +148,14 @@ describe("test POST methods", () => {
   });
 
   describe("POST /buyItem", () => {
+    beforeAll(async () => {
+      await Player.create({
+        discordId: "imPoor",
+        discordDisplayName: "imPoor",
+        balance: 0,
+        cps: 0,
+      });
+    });
     test("Should respond with 401 when no token is provided", async () => {
       const response = await api.post("/api/buyItem");
       expect(response.status).toBe(401);
@@ -176,11 +184,11 @@ describe("test POST methods", () => {
       expect(response.status).toBe(404);
     });
     test("Should return with 409 if we dont have money to buy an item", async () => {
-      const poorBody = { discordId: "456", itemName: "1" };
+      const poorBody = { discordId: "imPoor", itemName: "1" };
       const response = await api
         .post("/api/buyItem")
         .set(headers)
-        .send({ ...poorBody, itemName: "1" });
+        .send(poorBody);
       expect(response.status).toBe(400);
     });
   });
