@@ -28,13 +28,22 @@ const fileLogger = morgan(
   { stream: accessLogStream }
 );
 
-const httpConsoleLogger = morgan(":timestamp :remote-addr :authKey :method :url :status :res[content-length] - :response-time ms :body");
+const httpConsoleLogger = morgan(
+  ":timestamp :remote-addr :authKey :method :url :status :res[content-length] - :response-time ms :body",
+  { skip: (req, res) => req.url.endsWith("/addBitToPlayer") && res.statusCode === 404 }
+);
 
+const logFormat = format.printf(
+  ({ level, message, timestamp }) =>
+    `[${timestamp}] ${level.toUpperCase()}: ${message}`
+);
 
-const logFormat = format.printf(({ level, message, timestamp }) => `[${timestamp}] ${level.toUpperCase()}: ${message}`);
 const logger = winston.createLogger({
   level: "info",
-  format: format.combine(format.timestamp({ format: "DD.MM.YYYY HH.mm.ss" }), logFormat),
+  format: format.combine(
+    format.timestamp({ format: "DD.MM.YYYY HH.mm.ss" }),
+    logFormat
+  ),
   defaultMeta: { service: "user-service" },
   transports: [
     new transports.Console(),
@@ -43,10 +52,9 @@ const logger = winston.createLogger({
       datePattern: "DD-MM-YYYY",
       zippedArchive: true,
       maxSize: "20m",
-      maxFiles: "14d"
-    })
-  ]
+      maxFiles: "14d",
+    }),
+  ],
 });
-
 
 export { logger, httpConsoleLogger, fileLogger };
