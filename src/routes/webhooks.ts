@@ -44,7 +44,7 @@ webhookRouter.post("/vote", async (req, res) => {
 
   logger.info(
     `Player ${player.discordId} has been given ${
-      isWeekend ? 2 : 1
+      shouldRewardDouble ? 2 : 1
     } unopened crates for voting!`
   );
 
