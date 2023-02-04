@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { MONGODB_URI, ENVIRONMENT, MONGODB_DEV_URI, CI } from "./config";
 
+import { MONGODB_URI, ENVIRONMENT, MONGODB_DEV_URI, CI } from "./config";
 import { logger } from "./logger";
 
 mongoose.set("strictQuery", false);
