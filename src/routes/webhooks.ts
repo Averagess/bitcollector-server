@@ -6,27 +6,17 @@ import { isString } from "../utils/isString";
 import { ENVIRONMENT } from "../utils/config";
 import { logger } from "../utils/logger";
 
-const parseIsWeekend = (value: unknown): boolean => {
+const isWeekendValidValue = (value: unknown): boolean => {
   if (isString(value)) {
-    if (value === "true") return true;
-    else if (value === "false") return false;
-    else throw new Error("Invalid value for isWeekend");
-  } else if (typeof value === "boolean") return value;
-  else throw new Error("Invalid value for isWeekend");
-};
-
-const isWeekendValueValid = (value: unknown): boolean => {
-  try {
-    parseIsWeekend(value);
-    return true;
-  } catch (error) {
-    return false;
-  }
+    if (value === "true" || value === "false") return true;
+    else return false;
+  } else if (typeof value === "boolean") return true;
+  else return false;
 };
 
 webhookRouter.post("/topgg", async (req, res) => {
   const { user, type, isWeekend } = req.body;
-  if (!isString(user) || !isString(type) || !isWeekendValueValid(isWeekend))
+  if (!isString(user) || !isString(type) || !isWeekendValidValue(isWeekend))
     return res.status(400).json({ error: "Invalid request body" });
 
   const player = await Player.findOne({ discordId: user });
