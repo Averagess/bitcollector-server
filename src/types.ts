@@ -34,9 +34,9 @@ export interface PlayerInterface {
 
 export interface ExtendedRequest extends Request {
   player?: Document<unknown, any, PlayerInterface> &
-    PlayerInterface & {
-      _id: Types.ObjectId;
-    };
+  PlayerInterface & {
+    _id: Types.ObjectId;
+  };
 }
 
 export interface BalanceUpdaterArguments {
