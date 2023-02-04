@@ -11,7 +11,7 @@ module.exports = {
   root: true,
   rules: {
     quotes: ["error", "double"],
-    indent: ["error", 2],
+    "@typescript-eslint/indent": ["error", 2],
     semi: ["error", "always"],
     eqeqeq: ["error", "always"],
     "no-nested-ternary": "error",
