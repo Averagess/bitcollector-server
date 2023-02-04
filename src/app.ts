@@ -9,7 +9,8 @@ import putRouter from "./routes/putters";
 import loginRouter from "./routes/login";
 import webhookRouter from "./routes/webhooks";
 
-import { httpConsoleLogger, fileLogger } from "./utils/logger";
+import { httpConsoleLogger, fileLogger, logger } from "./utils/logger";
+import { ENVIRONMENT } from "./utils/config";
 
 const app = express();
 
@@ -18,7 +19,12 @@ app.use(cors());
 app.use(httpConsoleLogger);
 app.use(fileLogger);
 app.use("/login", loginRouter); // Login route is not protected by authenticator
-app.use(authenticator);
+
+if(ENVIRONMENT === "development") {
+  logger.warn("Development environment detected. Disabling authenticator middleware.");
+} else {
+  app.use(authenticator);
+}
 app.use("/api", getRouter);
 app.use("/api", postRouter);
 app.use("/api", putRouter);
