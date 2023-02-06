@@ -8,19 +8,13 @@
     "esModuleInterop": true,
     "outDir": "build",
     "baseUrl": "./src",
-    "paths": {
-      "./*": [
-        "./*"
-      ]
-    }
   },
   "exclude": [
     "node_modules",
     "build"
   ],
   "include": [
-    "src/**/*.ts",
-    "tests/**/*.spec.ts"
+    "src/*",
   ],
   "files": [
     "src/server.ts"
