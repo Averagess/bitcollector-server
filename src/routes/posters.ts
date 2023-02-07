@@ -1,15 +1,15 @@
-import { logger } from "../utils/logger";
 import { Router } from "express";
+import { logger } from "../utils/logger";
 
-import items from "../items";
-import { Player } from "../models";
+import getPlayerByID from "../datafetchers/getPlayerByID";
+import updatePlayer from "../datafetchers/updatePlayer";
 import balanceUpdater from "../helpers/balanceUpdater";
-import playerExtractor from "../middleware/playerExtractor";
-import { ExtendedRequest } from "../types";
-import { isString } from "../utils/isString";
 import randomItemDrop from "../helpers/randomItemDrop";
-
-import { Item } from "../types";
+import items from "../items";
+import playerExtractor from "../middleware/playerExtractor";
+import { Player } from "../models";
+import { ExtendedRequest, Item } from "../types";
+import { isString } from "../utils/isString";
 
 const router = Router();
 
