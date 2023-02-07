@@ -136,13 +136,13 @@ router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
     player.inventory = inventory;
 
     // const updatedPlayer = await player.save();
-    await updatePlayer(player, true);
+    const updatedPlayer = await updatePlayer(player, true);
 
     const purchasedItem = itemInInventory
       ? itemInInventory
       : { ...item, amount: amountToBuy };
 
-    res.send({ updatePlayer, purchasedItem });
+    res.send({ player: updatedPlayer, purchasedItem });
   } else {
     const error = {
       error: "not enough money",
