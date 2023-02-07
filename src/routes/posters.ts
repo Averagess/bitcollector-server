@@ -135,13 +135,14 @@ router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
     player.cps = newCps;
     player.inventory = inventory;
 
-    const updatedPlayer = await player.save();
+    // const updatedPlayer = await player.save();
+    updatePlayer(player, true);
 
     const purchasedItem = itemInInventory
       ? itemInInventory
       : { ...item, amount: amountToBuy };
 
-    res.send({ player: updatedPlayer, purchasedItem });
+    res.send({ player, purchasedItem });
   } else {
     const error = {
       error: "not enough money",
@@ -168,7 +169,7 @@ router.post("/updatePlayer", playerExtractor,async (req: ExtendedRequest, res) =
 
   const oldBalance = BigInt(player.balance as string);
   const cps = player.cps;
-  const updatedAt = player.updatedAt;
+  const updatedAt = new Date(player.updatedAt);
 
   const newBalance = balanceUpdater({ oldBalance, cps, updatedAt });
 
@@ -183,9 +184,10 @@ router.post("/updatePlayer", playerExtractor,async (req: ExtendedRequest, res) =
 
   player.balance = newBalance.toString();
 
-  const updatedPlayer = await player.save();
+  // const updatedPlayer = await player.save();
+  updatePlayer(player, true);
 
-  res.send(updatedPlayer);
+  res.send(player);
 });
 
 router.post("/updateTwoPlayers", async (req,res) => {
@@ -201,12 +203,12 @@ router.post("/updateTwoPlayers", async (req,res) => {
 
   const clientOldBalance = BigInt(client.balance as string);
   const clientCps = client.cps;
-  const clientUpdatedAt = client.updatedAt;
+  const clientUpdatedAt = new Date(client.updatedAt);
   const clientNewBalance = balanceUpdater({ oldBalance: clientOldBalance, cps: clientCps, updatedAt: clientUpdatedAt });
 
   const targetOldBalance = BigInt(target.balance as string);
   const targetCps = target.cps;
-  const targetUpdatedAt = target.updatedAt;
+  const targetUpdatedAt = new Date(target.updatedAt);
   const targetNewBalance = balanceUpdater({ oldBalance: targetOldBalance, cps: targetCps, updatedAt: targetUpdatedAt });
 
   client.balance = clientNewBalance.toString();
@@ -238,7 +240,8 @@ router.post("/resetPlayer", playerExtractor,async (req: ExtendedRequest, res) =>
   player.cps = 0;
   player.inventory = [];
 
-  const updatedPlayer = await player.save();
+  // const updatedPlayer = await player.save();
+  const updatedPlayer = await updatePlayer(player, true);
   return res.send(updatedPlayer);
 });
 
@@ -246,7 +249,9 @@ router.post("/blacklistPlayer",async (req: ExtendedRequest,res) => {
   const { discordId, reason } = req.body;
 
   if(!isString(discordId)) return res.status(400).json({ error: "missing or invalid discordId" });
-  const player = await Player.findOne({ discordId });
+
+  // const player = await Player.findOne({ discordId });
+  const player = await getPlayerByID(discordId);
   if(player.blacklisted) return res.status(409).json({ error: "player already blacklisted" });
 
 
@@ -257,7 +262,8 @@ router.post("/blacklistPlayer",async (req: ExtendedRequest,res) => {
   }
 
   try {
-    const savedPlayer = await player.save({ timestamps: false });
+    // const savedPlayer = await player.save({ timestamps: false });
+    const savedPlayer = await updatePlayer(player, false);
     res.send(savedPlayer);
   } catch (error) {
     res.status(500).end();
@@ -267,7 +273,8 @@ router.post("/blacklistPlayer",async (req: ExtendedRequest,res) => {
 router.post("/unblacklistPlayer",async (req: ExtendedRequest,res) => {
   const { discordId } = req.body;
   if(!isString(discordId)) return res.status(400).json({ error: "missing or invalid discordId" });
-  const player = await Player.findOne({ discordId });
+  // const player = await Player.findOne({ discordId });
+  const player = await getPlayerByID(discordId);
   if(!player) return res.status(404).json({ error: "player not found" });
   if(player.blacklisted === null) return res.status(409).json({ error: "player not blacklisted" });
 
@@ -281,7 +288,8 @@ router.post("/unblacklistPlayer",async (req: ExtendedRequest,res) => {
   player.blacklisted = null;
 
   try {
-    const savedPlayer = await player.save();
+    // const savedPlayer = await player.save();
+    const savedPlayer = await updatePlayer(player, true);
     res.send(savedPlayer);
   } catch (error) {
     res.status(500).end();
@@ -301,7 +309,7 @@ router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest, res) =>
 
   const oldBalance = BigInt(player.balance as string);
   const cps = player.cps;
-  const updatedAt = player.updatedAt;
+  const updatedAt = new Date(player.updatedAt);
   const updatedBalance = balanceUpdater({ oldBalance, cps, updatedAt });
 
 
@@ -314,7 +322,8 @@ router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest, res) =>
   // add the reward to the players balance
   player.balance = (updatedBalance + BigInt(resObject.balanceReward)).toString();
 
-  await player.save();
+  // await player.save();
+  updatePlayer(player, true);
   res.send(resObject);
 });
 
@@ -330,7 +339,7 @@ router.post("/openCrate", playerExtractor, async (req: ExtendedRequest, res) => 
 
   const oldBalance = BigInt(player.balance as string);
   const cps = player.cps;
-  const updatedAt = player.updatedAt;
+  const updatedAt = new Date(player.updatedAt);
 
   const balanceReward = Math.round(Math.random() * 1500);
 
@@ -358,7 +367,8 @@ router.post("/openCrate", playerExtractor, async (req: ExtendedRequest, res) => 
   const newCps = player.inventory.reduce((acc, item) => acc + item.cps, 0);
   player.cps = Math.round(newCps * 100) / 100;
 
-  await player.save();
+  // await player.save();
+  await updatePlayer(player, true);
   res.send(resObject);
 });
 
