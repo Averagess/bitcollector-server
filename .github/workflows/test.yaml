@@ -25,6 +25,9 @@ jobs:
     - name: Start MongoDB
       uses: supercharge/mongodb-github-action@1.8.0
 
+    - name: Start redis cache
+      uses: shogo82148/actions-setup-redis@v1
+
     - name: Install dependencies
       run: yarn
     
@@ -41,3 +44,4 @@ jobs:
         ADMIN_PASSWORD: ci
         ADMIN_TOKEN: ci
         BOT_TOKEN: ci
+        REDIS_URL: redis://127.0.0.1:6379
