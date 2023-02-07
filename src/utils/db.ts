@@ -13,13 +13,14 @@ const connectToDatabase = async () => {
       await mongoose.connect("mongodb://localhost:27017/test");
     } else if (ENVIRONMENT === "test" || ENVIRONMENT === "development") {
       logger.info(
-        `Connecting to DEV database because env was set to: ${ENVIRONMENT}`
+        `Connecting to development database because env was set to: ${ENVIRONMENT}`
       );
       await mongoose.connect(MONGODB_DEV_URI);
+      logger.info("Successfully connected to development database.");
     } else if (ENVIRONMENT === "production") {
       logger.info("Connecting to production database");
       await mongoose.connect(MONGODB_URI);
-      logger.info("Successfully connected to production database");
+      logger.info("Successfully connected to production database.");
     } else
       throw new Error(`ENVIRONMENT was set to ${ENVIRONMENT} which is not a valid value. Valid values are: test, development, production, and ci`);
   } catch (error) {
