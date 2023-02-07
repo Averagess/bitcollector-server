@@ -2,12 +2,15 @@ import { BOT_TOKEN } from "../utils/config";
 import app from "../app";
 import { connectToDatabase, disconnectFromDatabase } from "../utils/db";
 import { Player } from "../models";
+import { connectToCache, client } from "../utils/redis";
 import supertest from "supertest";
 
 const api = supertest(app);
 
 beforeAll(async () => {
   await connectToDatabase();
+  await connectToCache();
+  await client.flushAll();
   await Player.deleteMany({});
   await Player.create({
     discordId: "123456789",
@@ -65,7 +68,7 @@ describe("Webhook", () => {
         .send({ user: "123456789", type: "upvote", isWeekend: "true" })
         .expect(200);
       const player = await Player.findOne({ discordId: "123456789" });
-      expect(player.unopenedCrates).toBe(2);
+      expect(player?.unopenedCrates).toBe(2);
     });
     test("Should return 200 and give player 1 crate if isWeekend is an boolean false string", async () => {
       await api
@@ -74,7 +77,7 @@ describe("Webhook", () => {
         .send({ user: "123456789", type: "upvote", isWeekend: "false" })
         .expect(200);
       const player = await Player.findOne({ discordId: "123456789" });
-      expect(player.unopenedCrates).toBe(3);
+      expect(player?.unopenedCrates).toBe(3);
     });
     test("Should return 200 and give player 2 crates if isWeekend is true", async () => {
       await api
@@ -83,7 +86,7 @@ describe("Webhook", () => {
         .send({ user: "123456789", type: "upvote", isWeekend: true })
         .expect(200);
       const player = await Player.findOne({ discordId: "123456789" });
-      expect(player.unopenedCrates).toBe(5);
+      expect(player?.unopenedCrates).toBe(5);
     });
     test("Should return 200 and give player 1 crate if isWeekend is false", async () => {
       await api
@@ -92,7 +95,7 @@ describe("Webhook", () => {
         .send({ user: "123456789", type: "upvote", isWeekend: false })
         .expect(200);
       const player = await Player.findOne({ discordId: "123456789" });
-      expect(player.unopenedCrates).toBe(6);
+      expect(player?.unopenedCrates).toBe(6);
     });
     test("Should return 404 if player doesnt exist", async () => {
       await api
@@ -141,7 +144,7 @@ describe("Webhook", () => {
         })
         .expect(200);
       const player = await Player.findOne({ discordId: "123456789" });
-      expect(player.unopenedCrates).toBe(7);
+      expect(player?.unopenedCrates).toBe(7);
     });
 
     test("Should return 404 and not give player 1 crate when discords sends a vote for non existing user", async () => {
