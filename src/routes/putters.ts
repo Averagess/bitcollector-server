@@ -1,6 +1,7 @@
-import { Player } from "../models";
 import { Router } from "express";
 const router = Router();
+
+import { Player } from "../models";
 
 router.put("/updatePlayer", async (req,res) => {
   const body = req.body;
