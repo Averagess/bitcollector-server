@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from "express";
-import mongoose, { Document, Types } from "mongoose";
+import mongoose from "mongoose";
 import mongooseLong from "mongoose-long";
 
 mongooseLong(mongoose);
@@ -26,17 +26,18 @@ export interface PlayerInterface {
   dailyCount: number
   unopenedCrates: number
   openedCrates: number
-  blacklisted: { reason: string, started: Date }
+  blacklisted: null | { reason: string, started: Date }
   blacklistHistory?: { reason: string, started: Date, ended: Date }[]
-  createdAt: Date
-  updatedAt: Date
+  createdAt: Date | string
+  updatedAt: Date | string
 }
 
 export interface ExtendedRequest extends Request {
-  player?: Document<unknown, any, PlayerInterface> &
-  PlayerInterface & {
-    _id: Types.ObjectId;
-  };
+  // player?: Document<unknown, any, PlayerInterface> &
+  // PlayerInterface & {
+  //   _id: Types.ObjectId;
+  // };
+  player?: PlayerInterface
 }
 
 export interface BalanceUpdaterArguments {
