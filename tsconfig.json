@@ -8,6 +8,7 @@
     "esModuleInterop": true,
     "outDir": "build",
     "baseUrl": "./src",
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",
