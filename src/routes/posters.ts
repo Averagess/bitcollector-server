@@ -44,7 +44,7 @@ router.post("/initPlayer", async (req, res) => {
     balance: 0,
   });
 
-  const existingPlayer = await Player.findOne({ discordId: player.discordId });
+  const existingPlayer = await getPlayerByID(player.discordId);
   if (existingPlayer) return res.status(409).json({ error: "Player already exists" });
 
   try {
@@ -136,13 +136,13 @@ router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
     player.inventory = inventory;
 
     // const updatedPlayer = await player.save();
-    updatePlayer(player, true);
+    await updatePlayer(player, true);
 
     const purchasedItem = itemInInventory
       ? itemInInventory
       : { ...item, amount: amountToBuy };
 
-    res.send({ player, purchasedItem });
+    res.send({ updatePlayer, purchasedItem });
   } else {
     const error = {
       error: "not enough money",
@@ -185,9 +185,9 @@ router.post("/updatePlayer", playerExtractor,async (req: ExtendedRequest, res) =
   player.balance = newBalance.toString();
 
   // const updatedPlayer = await player.save();
-  updatePlayer(player, true);
+  const updatedPlayer = await updatePlayer(player, true);
 
-  res.send(player);
+  res.send(updatedPlayer);
 });
 
 router.post("/updateTwoPlayers", async (req,res) => {
@@ -323,7 +323,7 @@ router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest, res) =>
   player.balance = (updatedBalance + BigInt(resObject.balanceReward)).toString();
 
   // await player.save();
-  updatePlayer(player, true);
+  await updatePlayer(player, true);
   res.send(resObject);
 });
 
