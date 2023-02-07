@@ -10,11 +10,11 @@ import { logger } from "./utils/logger";
   await connectToDatabase();
   await connectToCache();
   logger.info("Connections established");
+  app.listen(PORT, () => {
+    logger.info(`Server listening on http://localhost:${PORT}`);
+  });
 })();
 
-app.listen(PORT, () => {
-  logger.info(`Server listening on http://localhost:${PORT}`);
-});
 
 process.on("SIGINT", async () => {
   logger.info("SIGINT signal received. Shutting down gracefully");
