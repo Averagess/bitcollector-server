@@ -4,7 +4,7 @@ import { BOT_TOKEN } from "../utils/config";
 import supertest from "supertest";
 import { Player } from "../models";
 import balanceUpdater from "../helpers/balanceUpdater";
-import { connectToCache, client } from "../utils/redis";
+import { connectToCache, disconnectFromCache, client } from "../utils/redis";
 
 const api = supertest(app);
 
@@ -137,7 +137,7 @@ describe("test POST methods", () => {
   });
   describe("POST /initPlayer", () => {
     beforeAll(async () => {
-      api.post("/api/initPlayer").set(headers).send(body);
+      await api.post("/api/initPlayer").set(headers).send(body);
     });
     test("should respond with 401 when no token is provided", async () => {
       const response = await api.post("/api/initPlayer");
@@ -473,7 +473,6 @@ describe("test POST methods", () => {
         .post("/api/blacklistPlayer")
         .set(headers)
         .send({ discordId: "blacklistMe", reason });
-      console.log(response.body);
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("discordId");
       expect(response.body).toHaveProperty("discordDisplayName");
@@ -694,4 +693,5 @@ describe("test PUT methods", () => {
 
 afterAll(async () => {
   await disconnectFromDatabase();
+  await disconnectFromCache();
 });

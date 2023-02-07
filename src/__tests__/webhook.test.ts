@@ -2,7 +2,7 @@ import { BOT_TOKEN } from "../utils/config";
 import app from "../app";
 import { connectToDatabase, disconnectFromDatabase } from "../utils/db";
 import { Player } from "../models";
-import { connectToCache, client } from "../utils/redis";
+import { connectToCache, client, disconnectFromCache } from "../utils/redis";
 import supertest from "supertest";
 
 const api = supertest(app);
@@ -23,6 +23,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await Player.deleteMany({});
   await disconnectFromDatabase();
+  await disconnectFromCache();
 });
 
 describe("Webhook", () => {
