@@ -185,9 +185,9 @@ router.post("/updatePlayer", playerExtractor,async (req: ExtendedRequest, res) =
   player.balance = newBalance.toString();
 
   // const updatedPlayer = await player.save();
-  const updatedPlayer = await updatePlayer(player, true);
+  updatePlayer(player, true);
 
-  res.send(updatedPlayer);
+  res.send(player);
 });
 
 router.post("/updateTwoPlayers", async (req,res) => {
