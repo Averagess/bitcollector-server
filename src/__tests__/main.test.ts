@@ -4,11 +4,14 @@ import { BOT_TOKEN } from "../utils/config";
 import supertest from "supertest";
 import { Player } from "../models";
 import balanceUpdater from "../helpers/balanceUpdater";
+import { connectToCache, client } from "../utils/redis";
 
 const api = supertest(app);
 
 beforeAll(async () => {
   await connectToDatabase();
+  await connectToCache();
+  await client.flushAll();
   await Player.deleteMany({});
   await Player.create({
     discordId: "123",
@@ -67,6 +70,14 @@ describe("test GET methods", () => {
   });
 
   describe("GET /blacklist", () => {
+    beforeAll(async () => {
+      await Player.create({
+        discordId: "TESTING-GET-/blacklist",
+        discordDisplayName: "testintehee",
+        balance: "0",
+        cps: 0
+      });
+    });
     test("should respond with 401 when no token is provided", async () => {
       const response = await api.get("/api/blacklist");
       expect(response.status).toBe(401);
@@ -78,9 +89,9 @@ describe("test GET methods", () => {
       expect(response.body.length).toBe(0);
     });
     test("after adding a player to the blacklist, should respond with 200 and correct properties when token is provided", async () => {
-      const player = await Player.findOne({ discordId: "123" });
-      player.blacklisted = { reason: "test", started: new Date() };
-      await player.save({ timestamps: false });
+      const player = await Player.findOne({ discordId: "TESTING-GET-/blacklist" });
+      if(player) player.blacklisted = { reason: "test", started: new Date() };
+      await player?.save({ timestamps: false });
       const response = await api.get("/api/blacklist").set(headers);
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
@@ -98,10 +109,18 @@ describe("test POST methods", () => {
   };
   beforeAll(async () => {
     const player = await Player.findOne({ discordId: "123" });
-    player.blacklisted = null;
-    await player.save({ timestamps: false });
+    if(player) player.blacklisted = null;
+    await player?.save({ timestamps: false });
   });
   describe("POST /getShopForPlayer", () => {
+    beforeAll(async () => {
+      await Player.create({
+        discordId: "TESTING-POST-/getShopForPlayer",
+        discordDisplayName: "ok",
+        balance: "0",
+        cps: 0
+      });
+    });
     test("should respond with 401 when no token is provided", async () => {
       const response = await api.post("/api/getShopForPlayer");
       expect(response.status).toBe(401);
@@ -110,13 +129,16 @@ describe("test POST methods", () => {
       const response = await api
         .post("/api/getShopForPlayer")
         .set(headers)
-        .send(body);
+        .send({ discordId: "TESTING-POST-/getShopForPlayer" });
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
       expect(response.body.length).toBeGreaterThanOrEqual(1);
     });
   });
   describe("POST /initPlayer", () => {
+    beforeAll(async () => {
+      api.post("/api/initPlayer").set(headers).send(body);
+    });
     test("should respond with 401 when no token is provided", async () => {
       const response = await api.post("/api/initPlayer");
       expect(response.status).toBe(401);
@@ -340,7 +362,7 @@ describe("test POST methods", () => {
         .send({ discordId: "619" });
       expect(response.status).toBe(200);
       const player = await Player.findOne({ discordId: "619" });
-      expect(player.balance.toString()).toEqual("1");
+      expect(player?.balance?.toString()).toEqual("1");
     });
 
     test("Should respond with 400 if we dont provide discordId in body", async () => {
@@ -444,14 +466,14 @@ describe("test POST methods", () => {
     });
 
     test("Should respond with 200 and blacklist the player, and attach a reason when we provide one", async () => {
-      const player = await Player.findOne({ discordId: "blacklistMe" });
-      player.blacklisted = null;
-      await player.save();
+      await Player.findOneAndUpdate({ discordId: "blacklistMe" }, { blacklisted: null });
+      await client.del("blacklistMe");
       const reason = "testing blacklistPlayer";
       const response = await api
         .post("/api/blacklistPlayer")
         .set(headers)
         .send({ discordId: "blacklistMe", reason });
+      console.log(response.body);
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("discordId");
       expect(response.body).toHaveProperty("discordDisplayName");
@@ -547,9 +569,9 @@ describe("test POST methods", () => {
       expect(response.body.balanceReward).toBeGreaterThan(0);
       expect(response.body.balanceReward).toBeLessThanOrEqual(500);
       const player = await Player.findOne({ discordId: "redeemDaily" });
-      expect(Number(player.balance.toString())).toBeGreaterThan(0);
-      expect(Number(player.balance.toString())).toBeLessThanOrEqual(500);
-      expect(player.cps).toBe(0);
+      expect(Number(player?.balance.toString())).toBeGreaterThan(0);
+      expect(Number(player?.balance.toString())).toBeLessThanOrEqual(500);
+      expect(player?.cps).toBe(0);
     });
 
     test("Should respond with 409 if same player tries to redeem daily twice", async () => {
@@ -560,9 +582,9 @@ describe("test POST methods", () => {
       expect(response.status).toBe(409);
       expect(response.body.error).toEqual("daily already redeemed");
       const player = await Player.findOne({ discordId: "redeemDaily" });
-      expect(Number(player.balance.toString())).toBeGreaterThan(0);
-      expect(Number(player.balance.toString())).toBeLessThanOrEqual(500);
-      expect(player.cps).toBe(0);
+      expect(Number(player?.balance.toString())).toBeGreaterThan(0);
+      expect(Number(player?.balance.toString())).toBeLessThanOrEqual(500);
+      expect(player?.cps).toBe(0);
     });
 
     test("Should respond with 404 if we try to redeem daily on a nonexisting player", async () => {
@@ -602,10 +624,10 @@ describe("test POST methods", () => {
       expect(response.body.balanceReward).toBeLessThanOrEqual(1500);
 
       const player = await Player.findOne({ discordId: "openCrate" });
-      expect(player.openedCrates).toEqual(1);
-      expect(player.unopenedCrates).toEqual(0);
-      expect(player.inventory).toBeInstanceOf(Array);
-      expect(player.inventory).toHaveLength(1);
+      expect(player?.openedCrates).toEqual(1);
+      expect(player?.unopenedCrates).toEqual(0);
+      expect(player?.inventory).toBeInstanceOf(Array);
+      expect(player?.inventory).toHaveLength(1);
     });
 
     test("Should respond with 409 if player tries to open a crate, but doesnt have any to open.", async () => {
@@ -665,7 +687,7 @@ describe("test PUT methods", () => {
         .send({ discordId: "PutTest", balance: "1000" });
       expect(response.status).toBe(200);
       const player = await Player.findOne({ discordId: "PutTest" });
-      expect(player.balance.toString()).toEqual("1000");
+      expect(player?.balance.toString()).toEqual("1000");
     });
   });
 });
