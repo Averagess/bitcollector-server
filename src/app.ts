@@ -18,6 +18,7 @@ app.use(express.json());
 app.use(cors());
 app.use(httpConsoleLogger);
 app.use(fileLogger);
+app.use(express.static("public"));
 app.use("/login", loginRouter); // Login route is not protected by authenticator
 
 if(ENVIRONMENT === "development") {
