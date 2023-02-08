@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { client } from "../utils/redis";
 const router = Router();
 
 import { Player } from "../models";
@@ -11,7 +12,9 @@ router.put("/updatePlayer", async (req,res) => {
   try {
     const player = await Player.findOneAndUpdate({ discordId: body.discordId }, body, { new: true });
     if(!player) return res.status(404).json({ error: "Player not found" });
-    else return res.status(200).json({ message: "Player updated" });
+
+    await client.set(body.discordId, JSON.stringify(player.toJSON()));
+    return res.status(200).json({ message: "Player updated" });
   } catch (error) {
     if(error instanceof Error){
       return res.status(400).json({ error: error.message });
