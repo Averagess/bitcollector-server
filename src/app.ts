@@ -1,16 +1,16 @@
-import express from "express";
 import cors from "cors";
+import express from "express";
 
 import authenticator from "./middleware/authenticator";
 
 import getRouter from "./routes/getters";
+import loginRouter from "./routes/login";
 import postRouter from "./routes/posters";
 import putRouter from "./routes/putters";
-import loginRouter from "./routes/login";
 import webhookRouter from "./routes/webhooks";
 
-import { httpConsoleLogger, fileLogger, logger } from "./utils/logger";
 import { ENVIRONMENT } from "./utils/config";
+import { fileLogger, httpConsoleLogger, logger } from "./utils/logger";
 
 const app = express();
 
@@ -18,6 +18,7 @@ app.use(express.json());
 app.use(cors());
 app.use(httpConsoleLogger);
 app.use(fileLogger);
+app.use(express.static("public"));
 app.use("/login", loginRouter); // Login route is not protected by authenticator
 
 if(ENVIRONMENT === "development") {

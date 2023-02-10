@@ -1,29 +1,26 @@
-// eslint-disable-next-line no-undef
 module.exports = {
   verbose: true,
   testEnvironment: "node",
   testEnvironmentOptions: {
-    "url" : "http://localhost"
+    url: "http://localhost",
   },
   roots: [
-    "<rootDir>"
+    "<rootDir>",
   ],
   transform: {
-    "^.+\\.tsx?$": "ts-jest"
+    "^.+\\.ts?$": [
+      "ts-jest",
+      {
+        tsconfig: "tsconfig.json",
+      },
+    ],
   },
   testRegex: "(src|build)(/__tests__/.*|(\\.|/)(test|spec))\\.(js?|ts?)$",
-  globals: {
-    "ts-jest": {
-      "tsConfigFile": "tsconfig.json"
-    }
-  },
   moduleFileExtensions: [
-    "ts",
-    "tsx",
     "js",
-    "jsx",
     "json",
-    "node"
+    "node",
+    "ts",
   ],
-
+  preset: "ts-jest",
 };

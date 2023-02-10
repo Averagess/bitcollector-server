@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { Player } from "../models";
 const webhookRouter = Router();
 
-import { isString } from "../utils/isString";
+import getPlayerByID from "../datafetchers/getPlayerByID";
+import updatePlayer from "../datafetchers/updatePlayer";
 import { ENVIRONMENT } from "../utils/config";
+import { isString } from "../utils/isString";
 import { logger } from "../utils/logger";
 
 const isWeekendValidValue = (value: unknown): boolean => {
@@ -19,7 +20,8 @@ webhookRouter.post("/topgg", async (req, res) => {
   if (!isString(user) || !isString(type) || !isWeekendValidValue(isWeekend))
     return res.status(400).json({ error: "Invalid request body" });
 
-  const player = await Player.findOne({ discordId: user });
+  // const player = await Player.findOne({ discordId: user });
+  const player = await getPlayerByID(user);
   if (!player) return res.status(404).json({ error: "Player not found" });
 
   const shouldRewardDouble: boolean = isString(isWeekend)
@@ -39,7 +41,8 @@ webhookRouter.post("/topgg", async (req, res) => {
   );
 
   try {
-    await player.save();
+    // await player.save();
+    await updatePlayer(player, false);
     res.status(200).end();
   } catch (error) {
     logger.error(
@@ -53,7 +56,8 @@ webhookRouter.post("/discords", async (req,res) => {
   const { user, type } = req.body;
   if (!isString(user) || !isString(type)) return res.status(400).json({ error: "Invalid request body" });
 
-  const player = await Player.findOne({ discordId: user });
+  // const player = await Player.findOne({ discordId: user });
+  const player = await getPlayerByID(user);
   if (!player) return res.status(404).json({ error: "Player not found" });
 
   if(type === "vote"){
@@ -65,7 +69,8 @@ webhookRouter.post("/discords", async (req,res) => {
   logger.info(`Player ${player.discordId} has been given 1 unopened crate for voting!`);
 
   try {
-    await player.save();
+    // await player.save();
+    await updatePlayer(player, false);
     res.status(200).end();
   } catch (error) {
     logger.error(

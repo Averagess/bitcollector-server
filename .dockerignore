@@ -5,6 +5,7 @@ node_modules/
 .editorconfig
 .env
 .gitignore
+build/
 jest.config.js
 README.md
 request.http

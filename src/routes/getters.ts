@@ -20,10 +20,10 @@ const updateLeaderboard = async () => {
   logger.info("Updating leaderboard");
   const players = await Player.find({});
 
-  const playersWithUpdatedBalance = players.map((player) => {
+  const updatedPlayers = players.map((player) => {
     const oldBalance = BigInt(player.balance as string);
     const cps = player.cps;
-    const updatedAt = player.updatedAt;
+    const updatedAt = new Date(player.updatedAt);
 
     const newBalance = balanceUpdater({ oldBalance, cps, updatedAt }).toString();
 
@@ -44,7 +44,7 @@ const updateLeaderboard = async () => {
     else return 0;
   });
 
-  leaderBoard.players = playersWithUpdatedBalance.splice(0, 10);
+  leaderBoard.players = updatedPlayers.splice(0, 10);
   leaderBoard.createdAt = new Date();
 
   const nextUpdate = new Date();
@@ -110,7 +110,7 @@ router.get("/updateAllPlayers", async (_req, res) => {
 
       const oldBalance = BigInt(player.balance as string);
       const cps = player.cps;
-      const updatedAt = player.updatedAt;
+      const updatedAt = new Date(player.updatedAt);
 
       const newBalance = balanceUpdater({ oldBalance, cps, updatedAt });
 

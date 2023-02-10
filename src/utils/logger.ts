@@ -41,7 +41,7 @@ const logFormat = format.printf(
 const logger = winston.createLogger({
   level: "info",
   format: format.combine(
-    format.timestamp({ format: "DD.MM.YYYY HH.mm.ss" }),
+    format.timestamp({ format: "D.M.YYYY HH.mm.ss" }),
     logFormat
   ),
   defaultMeta: { service: "user-service" },
