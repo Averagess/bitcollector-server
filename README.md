@@ -1,6 +1,7 @@
 # bitcollector-server
 
 ## Available scripts
+`script - description`
 - start - starts an production express application under the build folder with node
 - build - builds the project with typescript compiler
 - dev - starts an development express application under the src folder with ts-node-dev
