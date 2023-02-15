@@ -15,7 +15,6 @@ import { logger } from "./utils/logger";
   });
 })();
 
-
 process.on("SIGINT", async () => {
   logger.info("SIGINT signal received. Shutting down gracefully");
   await disconnectFromDatabase();
