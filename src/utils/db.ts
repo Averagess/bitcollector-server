@@ -9,7 +9,7 @@ const connectToDatabase = async () => {
   try {
     logger.info("Attempting connecting to database");
     if (CI === "true" || (typeof CI === "boolean" && CI)) {
-      logger.info("Connecting to localhost database because CI was set to true");
+      logger.info("Connecting to localhost database because CI env variable was set to true");
       await mongoose.connect("mongodb://localhost:27017/test");
     } else if (ENVIRONMENT === "test" || ENVIRONMENT === "development") {
       logger.info(
@@ -24,9 +24,9 @@ const connectToDatabase = async () => {
     } else
       throw new Error(`ENVIRONMENT was set to ${ENVIRONMENT} which is not a valid value. Valid values are: test, development, production, and ci`);
   } catch (error) {
-    logger.error("Connection to database failed. Error below");
+    logger.error("Connecting to database failed. Error below");
     logger.error(error);
-    return process.exit(1);
+    process.exit(1);
   }
 
   return null;
@@ -34,12 +34,12 @@ const connectToDatabase = async () => {
 
 const disconnectFromDatabase = async () => {
   try {
-    logger.info("Attempting to disconnect from database");
+    logger.info("Attempting to disconnect from database.");
     await mongoose.disconnect();
-    logger.info("Disconnected from database successfully");
+    logger.info("Disconnected from database successfully.");
     return null;
   } catch (error) {
-    logger.error("Disconnecting from database failed. Error below");
+    logger.error("Disconnecting from database failed. Error below.");
     logger.error(error);
     return process.exit(1);
   }

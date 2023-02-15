@@ -14,6 +14,8 @@ import { fileLogger, httpConsoleLogger, logger } from "./utils/logger";
 
 const app = express();
 
+app.enable("trust proxy");
+
 app.use(express.json());
 app.use(cors());
 app.use(httpConsoleLogger);
