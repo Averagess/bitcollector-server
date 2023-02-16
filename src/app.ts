@@ -8,6 +8,7 @@ import loginRouter from "./routes/login";
 import postRouter from "./routes/posters";
 import putRouter from "./routes/putters";
 import webhookRouter from "./routes/webhooks";
+import analyticsRouter from "./routes/analytics";
 
 import { ENVIRONMENT } from "./utils/config";
 import { fileLogger, httpConsoleLogger, logger } from "./utils/logger";
@@ -31,6 +32,7 @@ if(ENVIRONMENT === "development") {
 app.use("/api", getRouter);
 app.use("/api", postRouter);
 app.use("/api", putRouter);
+app.use("/api/analytics", analyticsRouter);
 app.use("/webhooks", webhookRouter);
 
 export default app;
