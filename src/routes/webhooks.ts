@@ -80,4 +80,26 @@ webhookRouter.post("/discords", async (req,res) => {
   }
 });
 
+webhookRouter.post("/discordbotlist", async (req,res) => {
+  const { id } = req.body;
+  if (!isString(id)) return res.status(400).json({ error: "Invalid request body" });
+
+  const player = await getPlayerByID(id);
+  if (!player) return res.status(404).json({ error: "Player not found" });
+
+  player.unopenedCrates += 1;
+
+  logger.info(`Player ${player.discordId} has been given 1 unopened crate for voting!`);
+
+  try {
+    await updatePlayer(player, false);
+    res.status(200).end();
+  } catch (error) {
+    logger.error(
+      `Unknown error raised when trying to save player after vote webhook, error: ${error}`
+    );
+    res.status(500).end();
+  }
+});
+
 export default webhookRouter;
