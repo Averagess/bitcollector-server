@@ -92,10 +92,6 @@ router.get("/blacklist", async (_req, res) => {
   res.send(blacklistedPlayers);
 });
 
-if (process.env.NODE_ENV !== "test") {
-  cron.schedule("*/30 * * * *", updateLeaderboard);
-}
-
 router.get("/updateAllPlayers", async (_req, res) => {
   const players = await Player.find();
   if (!players) return res.status(404).send("No players found");
@@ -137,5 +133,9 @@ router.get("/updateAllPlayers", async (_req, res) => {
   );
   res.send(updatedPlayers);
 });
+
+if (process.env.NODE_ENV !== "test") {
+  cron.schedule("*/30 * * * *", updateLeaderboard);
+}
 
 export default router;
