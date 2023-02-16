@@ -27,11 +27,12 @@ afterAll(async () => {
 });
 
 describe("Webhook", () => {
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${BOT_TOKEN}`,
+  };
+
   describe("/webhooks/topgg", () => {
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${BOT_TOKEN}`,
-    };
     test("Should return 401 if we dont provide a token", async () => {
       await api
         .post("/webhooks/topgg")
@@ -115,11 +116,6 @@ describe("Webhook", () => {
   });
 
   describe("/webhooks/discords", () => {
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${BOT_TOKEN}`,
-    };
-
     test("Should return 401 if we dont provide a token", async () => {
       await api
         .post("/webhooks/discords")
@@ -155,6 +151,44 @@ describe("Webhook", () => {
         .send({
           type: "vote",
           user: "idontexist"
+        });
+    });
+  });
+
+  describe("webhooks/discordbotlist", () => {
+    test("Should return 401 if we dont provide a token", async () => {
+      await api
+        .post("/webhooks/discordbotlist")
+        .expect(401)
+        .expect({ error: "Unauthorized" });
+    });
+
+    test("Should return 401 if we provide an invalid token", async () => {
+      await api
+        .post("/webhooks/discordbotlist")
+        .set({ ...headers, Authorization: "Bearer INCORRECT_TOKEN" })
+        .expect(401)
+        .expect({ error: "Unauthorized" });
+    });
+
+    test("Should return 200 and give player 1 crate when discords sends a vote for existing user", async () => {
+      await api
+        .post("/webhooks/discordbotlist")
+        .set(headers)
+        .send({
+          id: "123456789",
+        })
+        .expect(200);
+      const player = await Player.findOne({ discordId: "123456789" });
+      expect(player?.unopenedCrates).toBe(8);
+    });
+
+    test("Should return 404 and not give player 1 crate when discords sends a vote for non existing user", async () => {
+      await api
+        .post("/webhooks/discordbotlist")
+        .set(headers)
+        .send({
+          id: "idontexist"
         });
     });
   });
