@@ -4,7 +4,7 @@ import cron from "node-cron";
 import { logger } from "../utils/logger";
 import { Analytics } from "../models";
 import { sendAnalyticsToDiscords, sendAnalyticsToDiscordBotList, sendAnalyticsToTopGG } from "../services/sendAnalyticsToExternalSites";
-import { ENABLE_ANALYTIC_SENDING } from "../utils/config";
+import { ENABLE_ANALYTIC_SENDING, ENVIRONMENT } from "../utils/config";
 
 const router = Router();
 
@@ -67,7 +67,7 @@ const sendAnalytics = async () => {
   logger.info("Finished POST:ing analytics to external Discord bot sites");
 };
 
-if (ENABLE_ANALYTIC_SENDING) {
+if (ENABLE_ANALYTIC_SENDING && ENVIRONMENT !== "test") {
   sendAnalytics();
   logger.info("Scheduling cronjob for POST:ing analytics data to external Discord bot sites");
 
