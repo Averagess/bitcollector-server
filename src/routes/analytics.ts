@@ -3,7 +3,7 @@ import cron from "node-cron";
 
 import { logger } from "../utils/logger";
 import { Analytics } from "../models";
-import { sendAnalyticsToDiscords, sendAnalyticsToDiscordBotList, sendAnalyticsToTopGG } from "../services/sendAnalyticsToExternalSites";
+import { sendAnalyticsToDiscords, sendAnalyticsToDiscordBotList, sendAnalyticsToTopGG, sendAnalyticsToDiscordBots } from "../services/sendAnalyticsToExternalSites";
 import { ENABLE_ANALYTIC_SENDING, ENVIRONMENT } from "../utils/config";
 
 const router = Router();
@@ -61,7 +61,8 @@ const sendAnalytics = async () => {
   await Promise.all([
     sendAnalyticsToTopGG(guildAmount),
     sendAnalyticsToDiscordBotList(guildAmount),
-    sendAnalyticsToDiscords(guildAmount)
+    sendAnalyticsToDiscords(guildAmount),
+    sendAnalyticsToDiscordBots(guildAmount)
   ]);
 
   logger.info("Finished POST:ing analytics to external Discord bot sites");
