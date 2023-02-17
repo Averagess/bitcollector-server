@@ -18,6 +18,7 @@ if(process.env.ENABLE_ANALYTIC_SENDING === "true") {
   else if(!process.env.TOPGG_TOKEN) throw new Error("TOPGG_TOKEN was not defined in env variables, and you have ENABLE_ANALYTIC_SENDING set to true");
   else if(!process.env.DISCORDBOTLIST_TOKEN) throw new Error("DISCORDBOTLIST_TOKEN was not defined in env variables, and you have ENABLE_ANALYTIC_SENDING set to true");
   else if(!process.env.DISCORDS_TOKEN) throw new Error("DISCORDS_TOKEN was not defined in env variables, and you have ENABLE_ANALYTIC_SENDING set to true");
+  else if(!process.env.DISCORDBOTS_TOKEN) throw new Error("DISCORDBOTS_TOKEN was not defined in env variables, and you have ENABLE_ANALYTIC_SENDING set to true");
 }
 
 export const PORT = Number(process.env.PORT) || 3000;
@@ -36,3 +37,4 @@ export const BOT_ID = process.env.BOT_ID;
 export const TOPGG_TOKEN = process.env.TOPGG_TOKEN;
 export const DISCORDBOTLIST_TOKEN = process.env.DISCORDBOTLIST_TOKEN;
 export const DISCORDS_TOKEN = process.env.DISCORDS_TOKEN;
+export const DISCORDBOTS_TOKEN = process.env.DISCORDBOTS_TOKEN;
