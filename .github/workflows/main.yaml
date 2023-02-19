@@ -50,13 +50,14 @@ jobs:
         ADMIN_TOKEN: ci
         BOT_TOKEN: ci
         REDIS_URL: redis://127.0.0.1:6379
+
   publish-image:
-      runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     if: github.event_name == 'push'
     permissions:
       packages: write
       contents: read
-    needs: build-and-lint
+    needs: build-and-test
     steps:
     - name: Git checkout
       uses: actions/checkout@v3
