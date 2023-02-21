@@ -24,6 +24,14 @@ const parseAnalyticsBody = (body: unknown) => {
 router.post("/update", async (req, res) => {
   try {
     const { guildAmount, userAmount } = parseAnalyticsBody(req.body);
+
+    const mostRecent = await Analytics.findOne({}).sort({ createdAt: -1 });
+
+    if(mostRecent && mostRecent.guildAmount === guildAmount && mostRecent.userAmount === userAmount) {
+      logger.info("Analytics data was the same as the most recent data in database, not creating a new document.");
+      return res.status(200).end();
+    }
+
     await Analytics.create({ guildAmount, userAmount });
 
     return res.status(200).end();
