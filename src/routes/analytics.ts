@@ -3,7 +3,12 @@ import cron from "node-cron";
 
 import { logger } from "../utils/logger";
 import { Analytics } from "../models";
-import { sendAnalyticsToDiscords, sendAnalyticsToDiscordBotList, sendAnalyticsToTopGG, sendAnalyticsToDiscordBots } from "../services/sendAnalyticsToExternalSites";
+import {
+  sendAnalyticsToDiscords,
+  sendAnalyticsToDiscordBotList,
+  sendAnalyticsToTopGG,
+  sendAnalyticsToDiscordBots,
+} from "../services/sendAnalyticsToExternalSites";
 import { ENABLE_ANALYTIC_SENDING, ENVIRONMENT } from "../utils/config";
 
 const router = Router();
@@ -27,9 +32,17 @@ router.post("/update", async (req, res) => {
 
     const mostRecent = await Analytics.findOne({}).sort({ createdAt: -1 });
 
-    if(mostRecent && mostRecent.guildAmount === guildAmount && mostRecent.userAmount === userAmount) {
-      logger.info("Analytics data was the same as the most recent data in database, not creating a new document.");
-      logger.info(`New analytics data: { guildAmount: ${guildAmount}, userAmount: ${userAmount} }, most recent analytics data: { guildAmount: ${mostRecent.guildAmount}, userAmount: ${mostRecent.userAmount} }`);
+    if (
+      mostRecent &&
+      mostRecent.guildAmount === guildAmount &&
+      mostRecent.userAmount === userAmount
+    ) {
+      logger.info(
+        "Analytics data was the same as the most recent data in database, not creating a new document."
+      );
+      logger.info(
+        `New analytics data: { guildAmount: ${guildAmount}, userAmount: ${userAmount} }, most recent analytics data: { guildAmount: ${mostRecent.guildAmount}, userAmount: ${mostRecent.userAmount} }`
+      );
       return res.status(200).end();
     }
 
@@ -60,8 +73,10 @@ const sendAnalytics = async () => {
   logger.info("Beginning to POST analytics to external Discord bot sites");
   const latestAnalytic = await Analytics.findOne({}).sort({ createdAt: -1 });
 
-  if(!latestAnalytic){
-    logger.error("Cancelled POST:ing analytics to external Discord bot sites because no analytics were found");
+  if (!latestAnalytic) {
+    logger.error(
+      "Cancelled POST:ing analytics to external Discord bot sites because no analytics were found"
+    );
     return;
   }
 
@@ -71,7 +86,7 @@ const sendAnalytics = async () => {
     sendAnalyticsToTopGG(guildAmount),
     sendAnalyticsToDiscordBotList(guildAmount),
     sendAnalyticsToDiscords(guildAmount),
-    sendAnalyticsToDiscordBots(guildAmount)
+    sendAnalyticsToDiscordBots(guildAmount),
   ]);
 
   logger.info("Finished POST:ing analytics to external Discord bot sites");
@@ -79,10 +94,15 @@ const sendAnalytics = async () => {
 
 if (ENABLE_ANALYTIC_SENDING && ENVIRONMENT !== "test") {
   sendAnalytics();
-  logger.info("Scheduling cronjob for POST:ing analytics data to external Discord bot sites");
+  logger.info(
+    "Scheduling cronjob for POST:ing analytics data to external Discord bot sites"
+  );
 
   // Every 6 hours and 1 minute
   cron.schedule("1 */6 * * *", () => sendAnalytics());
-} else logger.info("Not scheduling cronjob for POST:ing analytics data to external Discord bot sites because ENABLE_ANALYTIC_SENDING is false");
+} else
+  logger.info(
+    "Not scheduling cronjob for POST:ing analytics data to external Discord bot sites because ENABLE_ANALYTIC_SENDING is false"
+  );
 
 export default router;
