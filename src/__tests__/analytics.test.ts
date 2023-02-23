@@ -60,7 +60,24 @@ describe("Analytics", () => {
       expect(response.status).toBe(400);
     });
 
-    test("Should return 200 when both guildAmount and userAmount are provided and are numbers, and result is saved to DB", async () => {
+    test("Should return 201 when both guildAmount and userAmount are provided and are numbers, and result is saved to DB", async () => {
+      const response = await api
+        .post("/api/analytics/update")
+        .set(headers)
+        .send({
+          guildAmount: 1,
+          userAmount: 1,
+        });
+
+      expect(response.status).toBe(201);
+
+      const result = await Analytics.findOne({});
+      expect(result).not.toBeNull();
+      expect(result?.guildAmount).toBe(1);
+      expect(result?.userAmount).toBe(1);
+    });
+
+    test("Should return 200 when both values are provided, but they are the same as recent one. Result is not saved to DB", async () => {
       const response = await api
         .post("/api/analytics/update")
         .set(headers)
@@ -71,10 +88,8 @@ describe("Analytics", () => {
 
       expect(response.status).toBe(200);
 
-      const result = await Analytics.findOne({});
-      expect(result).not.toBeNull();
-      expect(result?.guildAmount).toBe(1);
-      expect(result?.userAmount).toBe(1);
+      const result = await Analytics.find({});
+      expect(result).toHaveLength(1);
     });
   });
 
