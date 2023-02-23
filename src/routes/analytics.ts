@@ -29,12 +29,13 @@ router.post("/update", async (req, res) => {
 
     if(mostRecent && mostRecent.guildAmount === guildAmount && mostRecent.userAmount === userAmount) {
       logger.info("Analytics data was the same as the most recent data in database, not creating a new document.");
+      logger.info(`New analytics data: { guildAmount: ${guildAmount}, userAmount: ${userAmount} }, most recent analytics data: { guildAmount: ${mostRecent.guildAmount}, userAmount: ${mostRecent.userAmount} }`);
       return res.status(200).end();
     }
 
     await Analytics.create({ guildAmount, userAmount });
 
-    return res.status(200).end();
+    return res.status(201).end();
   } catch (error) {
     if (error instanceof Error)
       return res.status(400).json({ error: error.message });
