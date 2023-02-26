@@ -13,28 +13,33 @@ import { isString } from "../utils/isString";
 
 const router = Router();
 
-router.post("/getShopForPlayer", playerExtractor, async (req:ExtendedRequest, res) => {
-  const player = req.player;
-  const inventory = player.inventory;
+router.post(
+  "/getShopForPlayer",
+  playerExtractor,
+  async (req: ExtendedRequest, res) => {
+    const player = req.player;
+    const inventory = player.inventory;
 
-  const shop = items.map((item) => {
-    const playerItem = inventory.find((i) => i.name === item.name);
-    if (playerItem) {
-      return {
-        ...item,
-        amount: playerItem.amount,
-        price: item.price * playerItem.amount,
-      };
-    } else {
-      return { ...item, amount: 0 };
-    }
-  });
+    const shop = items.map((item) => {
+      const playerItem = inventory.find((i) => i.name === item.name);
+      if (playerItem) {
+        return {
+          ...item,
+          amount: playerItem.amount,
+          price: item.price * playerItem.amount,
+        };
+      } else {
+        return { ...item, amount: 0 };
+      }
+    });
 
-  res.send(shop);
-});
+    res.send(shop);
+  }
+);
 
 router.post("/initPlayer", async (req, res) => {
-  if (!req.body.discordId) return res.status(400).json({ error: "discordId is required" });
+  if (!req.body.discordId)
+    return res.status(400).json({ error: "discordId is required" });
   if (!req.body.discordDisplayName)
     return res.status(400).json({ error: "discordDisplayName is required" });
 
@@ -45,7 +50,8 @@ router.post("/initPlayer", async (req, res) => {
   });
 
   const existingPlayer = await getPlayerByID(player.discordId);
-  if (existingPlayer) return res.status(409).json({ error: "Player already exists" });
+  if (existingPlayer)
+    return res.status(409).json({ error: "Player already exists" });
 
   try {
     const savedPlayer = await player.save();
@@ -56,14 +62,12 @@ router.post("/initPlayer", async (req, res) => {
   }
 });
 
-router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
+router.post("/buyItem", playerExtractor, async (req: ExtendedRequest, res) => {
   const player = req.player;
-  const { itemName, amount } = req.body;
+  const { itemName, amount, max } = req.body;
 
   if (!itemName)
     return res.status(400).json({ error: "itemName is an required field" });
-
-
 
   let item: Item | undefined;
 
@@ -83,13 +87,11 @@ router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
     (Date.now() - new Date(player.updatedAt).getTime()) / 1000
   );
 
-
   const oldBalance = BigInt(player.balance as string);
   const cps = player.cps;
   const updatedAt = new Date(player.updatedAt);
 
   let newBalance = balanceUpdater({ oldBalance, cps, updatedAt });
-
 
   logger.info(
     `Updating player ${player.discordId}
@@ -100,27 +102,31 @@ router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
       player.cps: ${player.cps}`
   );
 
-  const amountToBuy = Number(amount) || 1;
 
-  const itemInInventory = player.inventory.find((i) => i.name === item?.name);
+  const itemInInventory = player.inventory.find((i) => i.name === item.name);
+
+  const maxItems = max === true ? Math.floor(Number(newBalance / BigInt(item.price * (itemInInventory?.amount ?? 1)))) : null;
+
+  const amountToBuy = (maxItems ?? Number(amount)) || 1;
 
   const itemPriceBig = itemInInventory
-    ? BigInt(item.price.toString()) *
+    ? BigInt(item.price) *
       BigInt(itemInInventory.amount) *
       BigInt(amountToBuy)
-    : BigInt(item.price.toString()) * BigInt(amountToBuy);
+    : BigInt(item.price) * BigInt(amountToBuy);
 
   if (newBalance >= itemPriceBig) {
     newBalance = newBalance - itemPriceBig;
 
-    const newCps = Math.round((player.cps + item.cps * amountToBuy) * 100) / 100;
+    const newCps =
+      Math.round((player.cps + item.cps * amountToBuy) * 100) / 100;
 
     let inventory = player.inventory;
 
     if (itemInInventory) {
       itemInInventory.amount = itemInInventory.amount + amountToBuy;
       itemInInventory.price = itemInInventory.price + item.price * amountToBuy;
-      itemInInventory.cps = (item.cps * itemInInventory.amount);
+      itemInInventory.cps = item.cps * itemInInventory.amount;
       inventory = inventory.map((item) => {
         if (item.name === itemInInventory.name) {
           return itemInInventory;
@@ -128,7 +134,12 @@ router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
         return item;
       });
     } else {
-      inventory.push({ ...item, cps: item.cps * amountToBuy, amount: amountToBuy });
+      inventory.push({
+        ...item,
+        cps: item.cps * amountToBuy,
+        price: item.price * amountToBuy,
+        amount: amountToBuy,
+      });
     }
 
     player.balance = newBalance.toString();
@@ -139,8 +150,8 @@ router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
     const updatedPlayer = await updatePlayer(player, true);
 
     const purchasedItem = itemInInventory
-      ? itemInInventory
-      : { ...item, amount: amountToBuy };
+      ? { ...itemInInventory, amountPurchased: amountToBuy }
+      : { ...item, amount: amountToBuy, price: itemPriceBig.toString(), amountPurchased: amountToBuy };
 
     res.send({ player: updatedPlayer, purchasedItem });
   } else {
@@ -155,61 +166,81 @@ router.post("/buyItem", playerExtractor ,async (req:ExtendedRequest, res) => {
   }
 });
 
-router.post("/updatePlayer", playerExtractor,async (req: ExtendedRequest, res) => {
-  const player = req.player;
+router.post(
+  "/updatePlayer",
+  playerExtractor,
+  async (req: ExtendedRequest, res) => {
+    const player = req.player;
 
-  const discordName = isString(req.body.discordDisplayName) ? req.body.discordDisplayName : null;
-  if(discordName && discordName !== player.discordDisplayName) player.discordDisplayName = discordName;
+    const discordName = isString(req.body.discordDisplayName)
+      ? req.body.discordDisplayName
+      : null;
+    if (discordName && discordName !== player.discordDisplayName)
+      player.discordDisplayName = discordName;
 
-  const secondsSinceLastUpdate = Math.floor(
-    (Date.now() - new Date(player.updatedAt).getTime()) / 1000
-  );
+    const secondsSinceLastUpdate = Math.floor(
+      (Date.now() - new Date(player.updatedAt).getTime()) / 1000
+    );
 
-  if (!secondsSinceLastUpdate) return res.send(player);
+    if (!secondsSinceLastUpdate) return res.send(player);
 
-  const oldBalance = BigInt(player.balance as string);
-  const cps = player.cps;
-  const updatedAt = new Date(player.updatedAt);
+    const oldBalance = BigInt(player.balance as string);
+    const cps = player.cps;
+    const updatedAt = new Date(player.updatedAt);
 
-  const newBalance = balanceUpdater({ oldBalance, cps, updatedAt });
+    const newBalance = balanceUpdater({ oldBalance, cps, updatedAt });
 
-  logger.info(
-    `Updating player ${player.discordId}
+    logger.info(
+      `Updating player ${player.discordId}
     player.balance (old): ${player.balance}
     player.balance (new): ${newBalance}
     balance diff: ${BigInt(newBalance) - BigInt(player.balance as string)}
     secondsSinceLastUpdate: ${secondsSinceLastUpdate}
     player.cps:${player.cps}`
-  );
+    );
 
-  player.balance = newBalance.toString();
+    player.balance = newBalance.toString();
 
-  // const updatedPlayer = await player.save();
-  updatePlayer(player, true);
+    // const updatedPlayer = await player.save();
+    updatePlayer(player, true);
 
-  res.send(player);
-});
+    res.send(player);
+  }
+);
 
-router.post("/updateTwoPlayers", async (req,res) => {
+router.post("/updateTwoPlayers", async (req, res) => {
   const { targetId, clientId } = req.body;
 
-  if(!isString(targetId) || !isString(clientId)) return res.status(400).json({ error: "either both or one of the ids are missing or incorrect type" });
+  if (!isString(targetId) || !isString(clientId))
+    return res
+      .status(400)
+      .json({
+        error: "either both or one of the ids are missing or incorrect type",
+      });
 
   const client = await Player.findOne({ discordId: clientId });
   const target = await Player.findOne({ discordId: targetId });
 
-  if(!client) return res.status(404).json({ error: "client not found" });
-  if(!target) return res.status(404).json({ error: "target not found" });
+  if (!client) return res.status(404).json({ error: "client not found" });
+  if (!target) return res.status(404).json({ error: "target not found" });
 
   const clientOldBalance = BigInt(client.balance as string);
   const clientCps = client.cps;
   const clientUpdatedAt = new Date(client.updatedAt);
-  const clientNewBalance = balanceUpdater({ oldBalance: clientOldBalance, cps: clientCps, updatedAt: clientUpdatedAt });
+  const clientNewBalance = balanceUpdater({
+    oldBalance: clientOldBalance,
+    cps: clientCps,
+    updatedAt: clientUpdatedAt,
+  });
 
   const targetOldBalance = BigInt(target.balance as string);
   const targetCps = target.cps;
   const targetUpdatedAt = new Date(target.updatedAt);
-  const targetNewBalance = balanceUpdater({ oldBalance: targetOldBalance, cps: targetCps, updatedAt: targetUpdatedAt });
+  const targetNewBalance = balanceUpdater({
+    oldBalance: targetOldBalance,
+    cps: targetCps,
+    updatedAt: targetUpdatedAt,
+  });
 
   client.balance = clientNewBalance.toString();
   target.balance = targetNewBalance.toString();
@@ -219,8 +250,7 @@ router.post("/updateTwoPlayers", async (req,res) => {
   res.json({ client, target });
 });
 
-router.post("/addBitToPlayer",async (req, res) => {
-
+router.post("/addBitToPlayer", async (req, res) => {
   const { discordId } = req.body;
   if (!discordId) return res.status(400).send("discordId is required");
 
@@ -233,29 +263,34 @@ router.post("/addBitToPlayer",async (req, res) => {
   res.status(200).end();
 });
 
-router.post("/resetPlayer", playerExtractor,async (req: ExtendedRequest, res) => {
-  const player = req.player;
+router.post(
+  "/resetPlayer",
+  playerExtractor,
+  async (req: ExtendedRequest, res) => {
+    const player = req.player;
 
-  player.balance = "0";
-  player.cps = 0;
-  player.inventory = [];
+    player.balance = "0";
+    player.cps = 0;
+    player.inventory = [];
 
-  // const updatedPlayer = await player.save();
-  const updatedPlayer = await updatePlayer(player, true);
-  return res.send(updatedPlayer);
-});
+    // const updatedPlayer = await player.save();
+    const updatedPlayer = await updatePlayer(player, true);
+    return res.send(updatedPlayer);
+  }
+);
 
-router.post("/blacklistPlayer",async (req: ExtendedRequest,res) => {
+router.post("/blacklistPlayer", async (req: ExtendedRequest, res) => {
   const { discordId, reason } = req.body;
 
-  if(!isString(discordId)) return res.status(400).json({ error: "missing or invalid discordId" });
+  if (!isString(discordId))
+    return res.status(400).json({ error: "missing or invalid discordId" });
 
   // const player = await Player.findOne({ discordId });
   const player = await getPlayerByID(discordId);
-  if(player.blacklisted) return res.status(409).json({ error: "player already blacklisted" });
+  if (player.blacklisted)
+    return res.status(409).json({ error: "player already blacklisted" });
 
-
-  if(isString(reason)){
+  if (isString(reason)) {
     player.blacklisted = { reason: reason, started: new Date() };
   } else {
     player.blacklisted = { reason: "Reason not given", started: new Date() };
@@ -270,17 +305,20 @@ router.post("/blacklistPlayer",async (req: ExtendedRequest,res) => {
   }
 });
 
-router.post("/unblacklistPlayer",async (req: ExtendedRequest,res) => {
+router.post("/unblacklistPlayer", async (req: ExtendedRequest, res) => {
   const { discordId } = req.body;
-  if(!isString(discordId)) return res.status(400).json({ error: "missing or invalid discordId" });
+  if (!isString(discordId))
+    return res.status(400).json({ error: "missing or invalid discordId" });
   // const player = await Player.findOne({ discordId });
   const player = await getPlayerByID(discordId);
-  if(!player) return res.status(404).json({ error: "player not found" });
-  if(player.blacklisted === null) return res.status(409).json({ error: "player not blacklisted" });
-
+  if (!player) return res.status(404).json({ error: "player not found" });
+  if (player.blacklisted === null)
+    return res.status(409).json({ error: "player not blacklisted" });
 
   player.blacklistHistory.push({
-    reason: player.blacklisted.reason ? player.blacklisted.reason : "No reason given",
+    reason: player.blacklisted.reason
+      ? player.blacklisted.reason
+      : "No reason given",
     started: player.blacklisted.started,
     ended: new Date(),
   });
@@ -296,80 +334,113 @@ router.post("/unblacklistPlayer",async (req: ExtendedRequest,res) => {
   }
 });
 
-router.post("/redeemDaily", playerExtractor,async (req: ExtendedRequest, res) => {
-  const player = req.player;
-  // If this is falsy ( null ), its the first time the player has redeemed daily. Otherwise we create a new date object from the lastDaily property
-  const hoursSinceLastRedeem = player.lastDaily ? Math.floor(Date.now() - new Date(player.lastDaily).getTime()) / 1000 / 60 / 60 : null;
+router.post(
+  "/redeemDaily",
+  playerExtractor,
+  async (req: ExtendedRequest, res) => {
+    const player = req.player;
+    // If this is falsy ( null ), its the first time the player has redeemed daily. Otherwise we create a new date object from the lastDaily property
+    const hoursSinceLastRedeem = player.lastDaily
+      ? Math.floor(Date.now() - new Date(player.lastDaily).getTime()) /
+        1000 /
+        60 /
+        60
+      : null;
 
-  const resObject = {
-    balanceReward: null,
-  };
+    const resObject = {
+      balanceReward: null,
+    };
 
-  if(hoursSinceLastRedeem < 24 && hoursSinceLastRedeem !== null) return res.status(409).json({ error: "daily already redeemed", hoursSinceLastRedeem });
+    if (hoursSinceLastRedeem < 24 && hoursSinceLastRedeem !== null)
+      return res
+        .status(409)
+        .json({ error: "daily already redeemed", hoursSinceLastRedeem });
 
-  const oldBalance = BigInt(player.balance as string);
-  const cps = player.cps;
-  const updatedAt = new Date(player.updatedAt);
-  const updatedBalance = balanceUpdater({ oldBalance, cps, updatedAt });
+    const oldBalance = BigInt(player.balance as string);
+    const cps = player.cps;
+    const updatedAt = new Date(player.updatedAt);
+    const updatedBalance = balanceUpdater({ oldBalance, cps, updatedAt });
 
+    player.dailyCount += 1;
+    player.lastDaily = new Date();
 
-  player.dailyCount += 1;
-  player.lastDaily = new Date();
+    // default daily reward
+    resObject.balanceReward = Math.floor(Math.random() * 500 + 1);
 
-  // default daily reward
-  resObject.balanceReward = Math.floor(Math.random() * 500 + 1);
+    // add the reward to the players balance
+    player.balance = (
+      updatedBalance + BigInt(resObject.balanceReward)
+    ).toString();
 
-  // add the reward to the players balance
-  player.balance = (updatedBalance + BigInt(resObject.balanceReward)).toString();
-
-  // await player.save();
-  await updatePlayer(player, true);
-  res.send(resObject);
-});
-
-router.post("/openCrate", playerExtractor, async (req: ExtendedRequest, res) => {
-  const player = req.player;
-
-  if(player.unopenedCrates <= 0) return res.status(409).json({ error: "no crates to open" });
-
-  const resObject = {
-    balanceReward: null,
-    itemReward: { name: null, amount: null, cps: null, price: null },
-  };
-
-  const oldBalance = BigInt(player.balance as string);
-  const cps = player.cps;
-  const updatedAt = new Date(player.updatedAt);
-
-  const balanceReward = Math.round(Math.random() * 1500);
-
-  player.balance = (balanceUpdater({ oldBalance, cps, updatedAt }) + BigInt(balanceReward)).toString();
-  resObject.balanceReward = balanceReward;
-
-  player.unopenedCrates -= 1;
-  player.openedCrates +=  1;
-
-  const randomItem = randomItemDrop();
-  const randomAmount = Math.round(Math.random() * 10);
-
-  const itemInInventory = player.inventory.find(item => item.name === randomItem.name);
-
-  resObject.itemReward = { ...randomItem, amount: randomAmount, cps: Math.round(randomItem.cps * randomAmount * 100) / 100 };
-
-  if(itemInInventory) {
-    itemInInventory.amount += randomAmount;
-    itemInInventory.cps = Math.round(randomItem.cps * itemInInventory.amount * 100) / 100;
-    player.inventory = player.inventory.map(item => item.name === randomItem.name ? itemInInventory : item);
-  } else {
-    player.inventory.push({ ...randomItem, amount: randomAmount, cps: Math.round(randomItem.cps * randomAmount * 100) / 100 });
+    // await player.save();
+    await updatePlayer(player, true);
+    res.send(resObject);
   }
+);
 
-  const newCps = player.inventory.reduce((acc, item) => acc + item.cps, 0);
-  player.cps = Math.round(newCps * 100) / 100;
+router.post(
+  "/openCrate",
+  playerExtractor,
+  async (req: ExtendedRequest, res) => {
+    const player = req.player;
 
-  // await player.save();
-  await updatePlayer(player, true);
-  res.send(resObject);
-});
+    if (player.unopenedCrates <= 0)
+      return res.status(409).json({ error: "no crates to open" });
+
+    const resObject = {
+      balanceReward: null,
+      itemReward: { name: null, amount: null, cps: null, price: null },
+    };
+
+    const oldBalance = BigInt(player.balance as string);
+    const cps = player.cps;
+    const updatedAt = new Date(player.updatedAt);
+
+    const balanceReward = Math.round(Math.random() * 1500);
+
+    player.balance = (
+      balanceUpdater({ oldBalance, cps, updatedAt }) + BigInt(balanceReward)
+    ).toString();
+    resObject.balanceReward = balanceReward;
+
+    player.unopenedCrates -= 1;
+    player.openedCrates += 1;
+
+    const randomItem = randomItemDrop();
+    const randomAmount = Math.round(Math.random() * 10);
+
+    const itemInInventory = player.inventory.find(
+      (item) => item.name === randomItem.name
+    );
+
+    resObject.itemReward = {
+      ...randomItem,
+      amount: randomAmount,
+      cps: Math.round(randomItem.cps * randomAmount * 100) / 100,
+    };
+
+    if (itemInInventory) {
+      itemInInventory.amount += randomAmount;
+      itemInInventory.cps =
+        Math.round(randomItem.cps * itemInInventory.amount * 100) / 100;
+      player.inventory = player.inventory.map((item) =>
+        item.name === randomItem.name ? itemInInventory : item
+      );
+    } else {
+      player.inventory.push({
+        ...randomItem,
+        amount: randomAmount,
+        cps: Math.round(randomItem.cps * randomAmount * 100) / 100,
+      });
+    }
+
+    const newCps = player.inventory.reduce((acc, item) => acc + item.cps, 0);
+    player.cps = Math.round(newCps * 100) / 100;
+
+    // await player.save();
+    await updatePlayer(player, true);
+    res.send(resObject);
+  }
+);
 
 export default router;

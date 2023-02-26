@@ -75,7 +75,7 @@ describe("test GET methods", () => {
         discordId: "TESTING-GET-/blacklist",
         discordDisplayName: "testintehee",
         balance: "0",
-        cps: 0
+        cps: 0,
       });
     });
     test("should respond with 401 when no token is provided", async () => {
@@ -89,8 +89,10 @@ describe("test GET methods", () => {
       expect(response.body.length).toBe(0);
     });
     test("after adding a player to the blacklist, should respond with 200 and correct properties when token is provided", async () => {
-      const player = await Player.findOne({ discordId: "TESTING-GET-/blacklist" });
-      if(player) player.blacklisted = { reason: "test", started: new Date() };
+      const player = await Player.findOne({
+        discordId: "TESTING-GET-/blacklist",
+      });
+      if (player) player.blacklisted = { reason: "test", started: new Date() };
       await player?.save({ timestamps: false });
       const response = await api.get("/api/blacklist").set(headers);
       expect(response.status).toBe(200);
@@ -109,7 +111,7 @@ describe("test POST methods", () => {
   };
   beforeAll(async () => {
     const player = await Player.findOne({ discordId: "123" });
-    if(player) player.blacklisted = null;
+    if (player) player.blacklisted = null;
     await player?.save({ timestamps: false });
   });
   describe("POST /getShopForPlayer", () => {
@@ -118,7 +120,7 @@ describe("test POST methods", () => {
         discordId: "TESTING-POST-/getShopForPlayer",
         discordDisplayName: "ok",
         balance: "0",
-        cps: 0
+        cps: 0,
       });
     });
     test("should respond with 401 when no token is provided", async () => {
@@ -164,7 +166,7 @@ describe("test POST methods", () => {
       const response = await api
         .post("/api/initPlayer")
         .set(headers)
-        .send({ ...body, discordDisplayName: "test" });
+        .send({ discordId: "456", discordDisplayName: "test" });
       expect(response.status).toBe(409);
     });
   });
@@ -181,6 +183,12 @@ describe("test POST methods", () => {
         discordId: "imRich",
         discordDisplayName: "imRich",
         balance: 15000,
+        cps: 0,
+      });
+      await Player.create({
+        discordId: "iBuyMax",
+        discordDisplayName: "iBuyMax",
+        balance: 1000,
         cps: 0,
       });
     });
@@ -217,6 +225,28 @@ describe("test POST methods", () => {
         .set(headers)
         .send({ discordId: "imPoor", itemName: "1" });
       expect(response.status).toBe(400);
+    });
+    test("Should return with 200 if we try to buy a max amount of an item, and return 20 bought items with balance 1k", async () => {
+      const response = await api
+        .post("/api/buyItem")
+        .set(headers)
+        .send({ discordId: "iBuyMax", itemName: "1", max: true });
+
+      expect(response.status).toBe(200);
+      expect(response.body.player.balance).toBe("0");
+      expect(response.body.player.inventory[0].amount).toBe(20);
+      expect(response.body.purchasedItem.amount).toBe(20);
+      expect(response.body.purchasedItem.price).toBe("1000");
+    });
+    test("Should return with 400 if we try to buy a max amount of an item, with 0 balance", async () => {
+      const response = await api
+        .post("/api/buyItem")
+        .set(headers)
+        .send({ discordId: "iBuyMax", itemName: "1", max: true });
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe("not enough money");
+      expect(response.body.itemPrice).toBe("1000");
+      expect(response.body.amount).toBe("1");
     });
   });
 
@@ -466,7 +496,10 @@ describe("test POST methods", () => {
     });
 
     test("Should respond with 200 and blacklist the player, and attach a reason when we provide one", async () => {
-      await Player.findOneAndUpdate({ discordId: "blacklistMe" }, { blacklisted: null });
+      await Player.findOneAndUpdate(
+        { discordId: "blacklistMe" },
+        { blacklisted: null }
+      );
       await client.del("blacklistMe");
       const reason = "testing blacklistPlayer";
       const response = await api
