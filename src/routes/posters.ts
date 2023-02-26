@@ -150,8 +150,8 @@ router.post("/buyItem", playerExtractor, async (req: ExtendedRequest, res) => {
     const updatedPlayer = await updatePlayer(player, true);
 
     const purchasedItem = itemInInventory
-      ? itemInInventory
-      : { ...item, amount: amountToBuy, price: itemPriceBig.toString() };
+      ? { ...itemInInventory, amountPurchased: amountToBuy }
+      : { ...item, amount: amountToBuy, price: itemPriceBig.toString(), amountPurchased: amountToBuy };
 
     res.send({ player: updatedPlayer, purchasedItem });
   } else {
