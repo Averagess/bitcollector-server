@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import helmet from "helmet";
 
 import authenticator from "./middleware/authenticator";
 
@@ -17,6 +18,7 @@ const app = express();
 
 app.enable("trust proxy");
 
+app.use(helmet());
 app.use(express.json());
 app.use(cors());
 app.use(httpConsoleLogger);
