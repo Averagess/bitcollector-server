@@ -23,7 +23,7 @@ const parseAnalyticsBody = (body: unknown) => {
     typeof body.userAmount !== "number"
   )
     throw new Error("Body had invalid type guildAmount or userAmount");
-  else return body as { guildAmount: number; userAmount: number };
+  else return { guildAmount: body.guildAmount, userAmount: body.userAmount}
 };
 
 router.post("/update", async (req, res) => {
