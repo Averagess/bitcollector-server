@@ -1,5 +1,6 @@
-import getPlayerByID from "../datafetchers/getPlayerByID";
 import { NextFunction,  Response } from "express";
+
+import getPlayerByID from "../datafetchers/getPlayerByID";
 import { ExtendedRequest } from "../types";
 import { isString } from "../utils/isString";
 import { ADMIN_TOKEN } from "../utils/config";

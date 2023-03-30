@@ -5,13 +5,14 @@ import balanceUpdater from "../helpers/balanceUpdater";
 import items from "../items";
 import { Player } from "../models";
 import { logger } from "../utils/logger";
+import { generateLeaderboard } from "../utils/generateLeaderboard";
 
-import { LeaderboardObject } from "../types";
+import { Leaderboard } from "../types";
 
 const router = Router();
 
-const leaderBoard: LeaderboardObject = {
-  players: null,
+const leaderBoard: Leaderboard = {
+  bufferB64: null,
   createdAt: null,
   nextUpdate: null,
 };
@@ -44,7 +45,6 @@ const updateLeaderboard = async () => {
     else return 0;
   });
 
-  leaderBoard.players = updatedPlayers.splice(0, 10);
   leaderBoard.createdAt = new Date();
 
   const nextUpdate = new Date();
@@ -61,6 +61,16 @@ const updateLeaderboard = async () => {
   nextUpdate.setMinutes(next30or00minute);
 
   leaderBoard.nextUpdate = nextUpdate;
+
+  const params = {
+    players: updatedPlayers.splice(0, 10),
+    createdAt: leaderBoard.createdAt,
+    nextUpdate: leaderBoard.nextUpdate
+  };
+
+  const buffer = await generateLeaderboard(params);
+  leaderBoard.bufferB64 = buffer.toString("base64");
+
   logger.info(
     `Leaderboard updated successfully, next update is ${nextUpdate.toLocaleString(
       "fi-FI"
@@ -78,7 +88,7 @@ router.get("/allItems", (_req, res) => {
 });
 
 router.get("/leaderboard", async (_req, res) => {
-  if (!leaderBoard.players) {
+  if (!leaderBoard.bufferB64) {
     await updateLeaderboard();
     return res.send(leaderBoard);
   }
