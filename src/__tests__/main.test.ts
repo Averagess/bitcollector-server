@@ -65,7 +65,7 @@ describe("test GET methods", () => {
     test("should respond with 200 and correct properties when token is provided", async () => {
       const response = await api.get("/api/leaderboard").set(headers);
       expect(response.status).toBe(200);
-      expect(response.body.players).toBeInstanceOf(Array);
+      expect(typeof response.body.bufferB64).toEqual("string");
     });
   });
 
