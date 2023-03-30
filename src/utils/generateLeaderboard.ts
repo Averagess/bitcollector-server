@@ -1,6 +1,6 @@
 import { createCanvas, loadImage } from "canvas";
 
-import { calcMinutesAfterDate, calcMinutesToDate } from "./calcMinutesHelper";
+import dateToPrettyUTC from "./dateToPrettyUTC";
 import { PlayerInLeaderboard, PlayerInterface } from "../types";
 
 const autoCropName = (text: string): string => {
@@ -20,9 +20,9 @@ const readableNumber = (value: string): string => {
 };
 
 interface generateLeaderboardParams {
-  players: PlayerInterface[] | PlayerInLeaderboard[]
-  createdAt: Date
-  nextUpdate: Date
+  players: PlayerInterface[] | PlayerInLeaderboard[];
+  createdAt: Date;
+  nextUpdate: Date;
 }
 
 export const generateLeaderboard = async ({
@@ -37,7 +37,9 @@ export const generateLeaderboard = async ({
   ctx.drawImage(bg, 0, 0, 800, 500);
 
   players.forEach((player, index) => {
-    const capitalizedUsername = (player.discordDisplayName.split(""))[0].toUpperCase() + player.discordDisplayName.slice(1);
+    const capitalizedUsername =
+      player.discordDisplayName.split("")[0].toUpperCase() +
+      player.discordDisplayName.slice(1);
     const croppedUsername = autoCropName(capitalizedUsername);
 
     const balanceReadable = readableNumber(player.balance.toString());
@@ -90,15 +92,10 @@ export const generateLeaderboard = async ({
   ctx.font = `${15}px Arial`;
   ctx.textAlign = "center";
 
-  const now = new Date();
-  const minutesSinceCreation = calcMinutesAfterDate(createdAt);
-  const minutesToUpdate = calcMinutesToDate(now, nextUpdate);
+  const now = dateToPrettyUTC(createdAt);
+  const next = dateToPrettyUTC(nextUpdate);
 
-  ctx.fillText(
-    `Leaderboard updated ${minutesSinceCreation} minutes ago, next update in ${minutesToUpdate} minutes`,
-    400,
-    470
-  );
+  ctx.fillText(`Leaderboard updated ${now}, next update is ${next}.`, 400, 470);
 
   return canvas.toBuffer("image/png");
 };
