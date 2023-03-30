@@ -1,0 +1,45 @@
+name: Build and test
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Start MongoDB
+      uses: supercharge/mongodb-github-action@1.8.0
+
+    - name: Start redis cache
+      uses: shogo82148/actions-setup-redis@v1
+
+    - name: Install dependencies
+      run: yarn
+    
+    - name: Build project
+      run: yarn build
+
+    - name: Run tests
+      run: yarn jest
+      env:
+        CI: true
+        MONGODB_DEV_URI: mongodb://localhost:27017/test
+        MONGODB_URI: mongodb://localhost:27017/test
+        ADMIN_USERNAME: ci
+        ADMIN_PASSWORD: ci
+        ADMIN_TOKEN: ci
+        BOT_TOKEN: ci
+        REDIS_URL: redis://127.0.0.1:6379
