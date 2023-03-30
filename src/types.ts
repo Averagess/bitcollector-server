@@ -53,8 +53,8 @@ export interface PlayerInLeaderboard {
   balance: string;
 }
 
-export interface LeaderboardObject {
-  players: PlayerInLeaderboard[] | null;
+export interface Leaderboard {
+  bufferB64: string;
   createdAt: Date | null;
   nextUpdate: Date | null;
 }
