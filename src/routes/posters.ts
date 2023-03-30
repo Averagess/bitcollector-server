@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { logger } from "../utils/logger";
 
 import getPlayerByID from "../datafetchers/getPlayerByID";
 import updatePlayer from "../datafetchers/updatePlayer";
@@ -10,6 +9,7 @@ import playerExtractor from "../middleware/playerExtractor";
 import { Player } from "../models";
 import { ExtendedRequest, Item } from "../types";
 import { isString } from "../utils/isString";
+import { logger } from "../utils/logger";
 
 const router = Router();
 
@@ -273,7 +273,6 @@ router.post(
     player.cps = 0;
     player.inventory = [];
 
-    // const updatedPlayer = await player.save();
     const updatedPlayer = await updatePlayer(player, true);
     return res.send(updatedPlayer);
   }
@@ -285,7 +284,6 @@ router.post("/blacklistPlayer", async (req: ExtendedRequest, res) => {
   if (!isString(discordId))
     return res.status(400).json({ error: "missing or invalid discordId" });
 
-  // const player = await Player.findOne({ discordId });
   const player = await getPlayerByID(discordId);
   if (player.blacklisted)
     return res.status(409).json({ error: "player already blacklisted" });
@@ -297,7 +295,6 @@ router.post("/blacklistPlayer", async (req: ExtendedRequest, res) => {
   }
 
   try {
-    // const savedPlayer = await player.save({ timestamps: false });
     const savedPlayer = await updatePlayer(player, false);
     res.send(savedPlayer);
   } catch (error) {
@@ -309,7 +306,7 @@ router.post("/unblacklistPlayer", async (req: ExtendedRequest, res) => {
   const { discordId } = req.body;
   if (!isString(discordId))
     return res.status(400).json({ error: "missing or invalid discordId" });
-  // const player = await Player.findOne({ discordId });
+
   const player = await getPlayerByID(discordId);
   if (!player) return res.status(404).json({ error: "player not found" });
   if (player.blacklisted === null)
@@ -372,7 +369,6 @@ router.post(
       updatedBalance + BigInt(resObject.balanceReward)
     ).toString();
 
-    // await player.save();
     await updatePlayer(player, true);
     res.send(resObject);
   }
@@ -437,7 +433,6 @@ router.post(
     const newCps = player.inventory.reduce((acc, item) => acc + item.cps, 0);
     player.cps = Math.round(newCps * 100) / 100;
 
-    // await player.save();
     await updatePlayer(player, true);
     res.send(resObject);
   }
