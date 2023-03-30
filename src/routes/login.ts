@@ -1,8 +1,8 @@
 import { Router } from "express";
 
 import { ADMIN_USERNAME, ADMIN_PASSWORD, ADMIN_TOKEN } from "../utils/config";
-const router = Router();
 
+const router = Router();
 
 router.post("/", (req, res) => {
   const { username, password } = req.body;
