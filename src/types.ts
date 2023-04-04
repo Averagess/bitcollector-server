@@ -15,6 +15,7 @@ export interface Item {
 
 interface InventoryItem extends Item {
   amount: number
+  baseCps: number
 }
 export interface PlayerInterface {
   discordDisplayName: string
