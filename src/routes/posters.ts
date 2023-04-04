@@ -127,6 +127,7 @@ router.post("/buyItem", playerExtractor, async (req: ExtendedRequest, res) => {
       itemInInventory.amount = itemInInventory.amount + amountToBuy;
       itemInInventory.price = itemInInventory.price + item.price * amountToBuy;
       itemInInventory.cps = Math.round((item.cps * itemInInventory.amount) * 100) / 100;
+      itemInInventory.baseCps = item.cps;
       inventory = inventory.map((item) => {
         if (item.name === itemInInventory.name) {
           return itemInInventory;
@@ -137,6 +138,7 @@ router.post("/buyItem", playerExtractor, async (req: ExtendedRequest, res) => {
       inventory.push({
         ...item,
         cps: Math.round((item.cps * amountToBuy) * 100) / 100,
+        baseCps: item.cps,
         price: item.price * amountToBuy,
         amount: amountToBuy,
       });
@@ -151,7 +153,7 @@ router.post("/buyItem", playerExtractor, async (req: ExtendedRequest, res) => {
 
     const purchasedItem = itemInInventory
       ? { ...itemInInventory, amountPurchased: amountToBuy }
-      : { ...item, amount: amountToBuy, price: itemPriceBig.toString(), amountPurchased: amountToBuy };
+      : { ...item, amount: amountToBuy, price: itemPriceBig.toString(), baseCps: item.cps, amountPurchased: amountToBuy };
 
     res.send({ player: updatedPlayer, purchasedItem });
   } else {
@@ -427,6 +429,7 @@ router.post(
         ...randomItem,
         amount: randomAmount,
         cps: Math.round(randomItem.cps * randomAmount * 100) / 100,
+        baseCps: randomItem.cps,
       });
     }
 
