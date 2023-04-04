@@ -126,7 +126,7 @@ router.post("/buyItem", playerExtractor, async (req: ExtendedRequest, res) => {
     if (itemInInventory) {
       itemInInventory.amount = itemInInventory.amount + amountToBuy;
       itemInInventory.price = itemInInventory.price + item.price * amountToBuy;
-      itemInInventory.cps = item.cps * itemInInventory.amount;
+      itemInInventory.cps = Math.round((item.cps * itemInInventory.amount) * 100) / 100;
       inventory = inventory.map((item) => {
         if (item.name === itemInInventory.name) {
           return itemInInventory;
@@ -136,7 +136,7 @@ router.post("/buyItem", playerExtractor, async (req: ExtendedRequest, res) => {
     } else {
       inventory.push({
         ...item,
-        cps: item.cps * amountToBuy,
+        cps: Math.round((item.cps * amountToBuy) * 100) / 100,
         price: item.price * amountToBuy,
         amount: amountToBuy,
       });
