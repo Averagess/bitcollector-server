@@ -70,7 +70,7 @@ router.get("/", async (req, res) => {
       analytics = await Analytics.find({}).sort({ createdAt: -1 });
     }
 
-    if (analytics === null)
+    if (analytics === null || analytics.length === 0)
       return res.status(404).json({ error: "No analytics found" });
 
     return res.status(200).json(analytics);
