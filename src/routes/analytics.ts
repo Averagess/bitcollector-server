@@ -56,9 +56,19 @@ router.post("/update", async (req, res) => {
   }
 });
 
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
+  const { amount } = req.query;
+  const numAmount = Number(amount);
+
+  if (amount && isNaN(numAmount) || numAmount < 1)
+    return res.status(400).json({ error: "Invalid amount specified" });
   try {
-    const analytics = await Analytics.findOne({}).sort({ createdAt: -1 });
+    let analytics;
+    if(numAmount) {
+      analytics = await Analytics.find({}).sort({ createdAt: -1 }).limit(numAmount);
+    } else {
+      analytics = await Analytics.find({}).sort({ createdAt: -1 });
+    }
 
     if (analytics === null)
       return res.status(404).json({ error: "No analytics found" });
