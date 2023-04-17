@@ -101,16 +101,16 @@ describe("Analytics", () => {
       });
     });
 
-    test("Should return 200 and the latest analytics entry", async () => {
+    test("Should return 200 and the latest analytics entry as the first", async () => {
       const response = await api
         .get("/api/analytics")
         .set({ Authorization: `Bearer ${BOT_TOKEN}` });
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty("guildAmount");
-      expect(response.body).toHaveProperty("userAmount");
-      expect(response.body.guildAmount).toBe(25);
-      expect(response.body.userAmount).toBe(25);
+      expect(response.body[0]).toHaveProperty("guildAmount");
+      expect(response.body[0]).toHaveProperty("userAmount");
+      expect(response.body[0].guildAmount).toBe(25);
+      expect(response.body[0].userAmount).toBe(25);
     });
 
     test("Should return 401 if no token is provided", async () => {
