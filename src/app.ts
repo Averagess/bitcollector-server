@@ -18,7 +18,7 @@ const app = express();
 
 app.enable("trust proxy");
 
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json());
 app.use(cors());
 app.use(httpConsoleLogger);
@@ -26,8 +26,10 @@ app.use(fileLogger);
 app.use(express.static("public"));
 app.use("/login", loginRouter); // Login route is not protected by authenticator
 
-if(ENVIRONMENT === "development") {
-  logger.warn("Development environment detected. Disabling authenticator middleware.");
+if (ENVIRONMENT === "development") {
+  logger.warn(
+    "Development environment detected. Disabling authenticator middleware."
+  );
 } else {
   app.use(authenticator);
 }
