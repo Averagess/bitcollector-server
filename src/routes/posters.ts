@@ -8,7 +8,7 @@ import items from "../items";
 import playerExtractor from "../middleware/playerExtractor";
 import { Player } from "../models";
 import { ExtendedRequest, Item } from "../types";
-import { isString } from "../utils/isString";
+import isString from "../utils/isString";
 import { logger } from "../utils/logger";
 
 const router = Router();

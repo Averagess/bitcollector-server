@@ -10,6 +10,7 @@ import {
   sendAnalyticsToDiscordBots,
 } from "../services/sendAnalyticsToExternalSites";
 import { ENABLE_ANALYTIC_SENDING, ENVIRONMENT } from "../utils/config";
+import isString from "../utils/isString";
 
 const router = Router();
 
@@ -56,25 +57,58 @@ router.post("/update", async (req, res) => {
   }
 });
 
+const parseAmount = (amount: unknown) => {
+  if (
+    (typeof amount === "number" && amount > 0) ||
+    (typeof amount === "string" && !isNaN(Number(amount)))
+  ) {
+    return Number(amount);
+  } else throw new Error("Invalid amount specified");
+};
+
+const parseDate = (date: unknown) => {
+  if (isString(date) && !isNaN(Date.parse(date))) {
+    return new Date(date);
+  }
+  throw new Error("Invalid date specified");
+};
+
 router.get("/", async (req, res) => {
-  const { amount } = req.query;
-  const numAmount = Number(amount);
+  const { amount, before, after } = req.query;
 
-  if (amount && isNaN(numAmount) || numAmount < 1)
-    return res.status(400).json({ error: "Invalid amount specified" });
+  let numAmount: number | undefined;
+  let beforeDate: Date | undefined;
+  let afterDate: Date | undefined;
+
   try {
-    let analytics;
-    if(numAmount) {
-      analytics = await Analytics.find({}).sort({ createdAt: -1 }).limit(numAmount);
-    } else {
-      analytics = await Analytics.find({}).sort({ createdAt: -1 });
-    }
+    numAmount = amount && parseAmount(amount);
+    beforeDate = before && parseDate(before);
+    afterDate = after && parseDate(after);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
 
-    if (analytics === null || analytics.length === 0)
+  try {
+    const params =
+      beforeDate || afterDate
+        ? {
+          createdAt: {},
+        }
+        : {};
+
+    beforeDate && (params.createdAt["$lte"] = beforeDate);
+    afterDate && (params.createdAt["$gte"] = afterDate);
+
+    const analytics = await Analytics.find(params)
+      .sort({ createdAt: -1 })
+      .limit(numAmount && numAmount);
+
+    if (analytics.length === 0)
       return res.status(404).json({ error: "No analytics found" });
 
     return res.status(200).json(analytics);
   } catch (error) {
+    console.log(`Unexpected error happened when an user tried to fetch analytics: ${error}`);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });

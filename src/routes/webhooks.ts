@@ -4,7 +4,7 @@ const webhookRouter = Router();
 import getPlayerByID from "../datafetchers/getPlayerByID";
 import updatePlayer from "../datafetchers/updatePlayer";
 import { ENVIRONMENT } from "../utils/config";
-import { isString } from "../utils/isString";
+import isString from "../utils/isString";
 import { logger } from "../utils/logger";
 
 const isWeekendValidValue = (value: unknown): boolean => {
