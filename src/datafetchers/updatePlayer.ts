@@ -2,10 +2,13 @@ import { Player } from "../models";
 import { PlayerInterface } from "../types";
 import { client } from "../utils/redis";
 import { logger } from "../utils/logger";
+import { DISABLE_CACHE } from "../utils/config";
 
 const updatePlayer = async (player: PlayerInterface, timestamps: boolean): Promise<PlayerInterface | null> => {
   // First we need to find the player in the database
   const updatedPlayer = await Player.findOneAndUpdate({ discordId: player.discordId }, { ...player }, { new: true, timestamps });
+
+  if(DISABLE_CACHE) return updatedPlayer;
 
   // If the player exists in the database, we return it and save it in cache
   if(updatedPlayer) {

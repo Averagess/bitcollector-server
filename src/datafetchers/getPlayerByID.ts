@@ -3,9 +3,11 @@ import { Player } from "../models";
 import { client } from "../utils/redis";
 import { logger } from "../utils/logger";
 import { PlayerInterface } from "../types";
+import { DISABLE_CACHE } from "../utils/config";
 
 
 const getPlayerByID = async (discordId: string): Promise<PlayerInterface | null> => {
+  if(DISABLE_CACHE) return await Player.findOne({ discordId });
   // First try to get the player from the cache
   const cachedPlayer = await client.get(discordId);
   if(cachedPlayer) {
