@@ -3,5 +3,11 @@
   "extends": [
     "config:base"
   ],
-  "ignorePaths": ["**/.yarn/**", "**/.github/**"]
+  "ignorePaths": ["**/.yarn/**", "**/.github/**"],
+  "packageRules": [
+    {
+      "packageNames": ["node", "yarn"],
+      "enabled": false,
+    },
+  ],
 }
