@@ -4,8 +4,24 @@
 		"config:base"
 	],
 	"ignorePaths": ["**/.yarn/**", "**/.github/**"],
+  "timezone": "Europe/Helsinki",
+  "schedule": ["after 5pm every monday"],
 	"packageRules": [{
 		"packageNames": ["node", "yarn"],
 		"enabled": false
-	}]
+	},
+    {
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  }
 }
