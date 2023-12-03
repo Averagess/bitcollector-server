@@ -2613,7 +2613,7 @@ __metadata:
     helmet: ^7.0.0
     jest: ^29.5.0
     mongoose: ^7.3.1
-    mongoose-long: ^0.7.0
+    mongoose-long: ^0.8.0
     morgan: ^1.10.0
     node-cron: ^3.0.2
     pg: ^8.11.1
@@ -6220,12 +6220,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose-long@npm:^0.7.0":
-  version: 0.7.1
-  resolution: "mongoose-long@npm:0.7.1"
+"mongoose-long@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "mongoose-long@npm:0.8.0"
   peerDependencies:
-    mongoose: 4.x || 5.x || 6.x || 7.x
-  checksum: afed45747099f34476e0c58c3d4d73da7fd1733bcecac2a5367906ae324f5e99a2830341a521e353db2f4d7406712af44bffccd0a7070bf080d7c24a3f65e54a
+    mongoose: 4.x || 5.x || 6.x || 7.x || 8.x
+  checksum: ae45c60f2d764600c1f9523bef48b324fca348dbb1c8e16efdcfd49673d909b4a23767889eba39b47c88eb783fde00da431d4ac9b526cb2fdda198c7c88c5715
   languageName: node
   linkType: hard
 
