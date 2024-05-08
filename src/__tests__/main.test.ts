@@ -365,7 +365,7 @@ describe("test POST methods", () => {
       const response = await api
         .post("/api/updateTwoPlayers")
         .set(headers)
-        .send({ targetId: "ThisDoesntExist", clientId: "222" });
+        .send({ targetId: "ThisDoesntExist", clientId: "111" });
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("error");
       expect(response.body.error).toEqual("target not found");
