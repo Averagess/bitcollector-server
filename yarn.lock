@@ -4429,10 +4429,10 @@ mongodb@6.6.2:
     bson "^6.7.0"
     mongodb-connection-string-url "^3.0.0"
 
-mongoose-long@^0.7.0:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/mongoose-long/-/mongoose-long-0.7.1.tgz#844b00f1b3f8b46e5d588f0e107f17a8fb614979"
-  integrity sha512-Gx+AHeK3oJJAfK8FGj75U7qfW1stD5Zi+7G3jpZmBTnsbCvhUU4DUVRa9DzEzyb7vah3nkZXjrp0PkEY5LCsPw==
+mongoose-long@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/mongoose-long/-/mongoose-long-0.8.0.tgz#6783921e9f953c62d8d6f49601640d68996dec98"
+  integrity sha512-gNpLDs9HE5W5rKuZPFOzFB1Ei/SJbSSA6HlF/wR5qGU3N9K5SXfXlvWm+uUWpqZ13H3Zhna3Ww6ILGW4TjFP+g==
 
 mongoose@^8.0.0:
   version "8.4.0"
