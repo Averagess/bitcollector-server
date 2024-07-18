@@ -642,9 +642,9 @@
     tar "^6.1.11"
 
 "@mongodb-js/saslprep@^1.1.5":
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/@mongodb-js/saslprep/-/saslprep-1.1.7.tgz#d1700facfd6916c50c2c88fd6d48d363a56c702f"
-  integrity sha512-dCHW/oEX0KJ4NjDULBo3JiOaK5+6axtpBbS+ao2ZInoAL9/YRQLhXzSNAFz7hP4nzLkIqsfYAK/PDE3+XHny0Q==
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/@mongodb-js/saslprep/-/saslprep-1.1.8.tgz#d39744540be8800d17749990b0da95b4271840d1"
+  integrity sha512-qKwC/M/nNNaKUBMQ0nuzm47b7ZYWQHN3pcXq4IIcoSBc2hOIrflAxJduIvvqmhoz3gR2TacTAs8vlsCVPkiEdQ==
   dependencies:
     sparse-bitfield "^3.0.3"
 
@@ -4483,9 +4483,9 @@ mongoose-long@^0.7.0:
   integrity sha512-Gx+AHeK3oJJAfK8FGj75U7qfW1stD5Zi+7G3jpZmBTnsbCvhUU4DUVRa9DzEzyb7vah3nkZXjrp0PkEY5LCsPw==
 
 mongoose@^8.0.0:
-  version "8.5.0"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-8.5.0.tgz#70e5f032225c20ab8819513fd8cb94b7e6a956bb"
-  integrity sha512-iGgZvgO+fIgX1AQMehkG+Wj8qrWc9it8vUZrSKWjrebgfwHTqUcIdTgWK8mT1us1xd83NOQxiuGbg9ZJtLxs2Q==
+  version "8.5.1"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-8.5.1.tgz#011192edf77af54dd0826a836459212da317c503"
+  integrity sha512-OhVcwVl91A1G6+XpjDcpkGP7l7ikZkxa0DylX7NT/lcEqAjggzSdqDxb48A+xsDxqNAr0ntSJ1yiE3+KJTOd5Q==
   dependencies:
     bson "^6.7.0"
     kareem "2.6.3"
